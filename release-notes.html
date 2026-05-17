@@ -73,7 +73,7 @@
             border-radius: 0.375rem;
             padding: 0.75rem 1rem;
             font-size: 0.875rem;
-            line-height: 1.6;
+            line-height: 1.65;
             word-break: break-all;
         }
         .section-label {
@@ -85,6 +85,17 @@
             color: var(--text-muted);
             margin-bottom: 0.375rem;
         }
+        .nav-tab-active {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            font-weight: 600;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .nav-tab-idle {
+            color: var(--text-muted);
+        }
+        .nav-tab-idle:hover { color: var(--text-main); }
     </style>
 </head>
 <body class="min-h-screen p-4 md:p-6">
@@ -92,14 +103,12 @@
     <div class="max-w-6xl mx-auto space-y-4">
 
         <header class="flex justify-between items-center bg-card px-4 py-3 rounded-xl border border-border shadow-sm">
-            <div class="flex items-center gap-3">
-                <a href="index.html" class="p-1.5 rounded-md text-muted hover:text-main hover:bg-surface transition-colors" title="Back to Home">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-                </a>
-                <h1 class="text-lg font-bold flex items-center gap-2">
-                    <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                    Release Notes
-                </h1>
+            <div class="flex items-center gap-3 flex-wrap">
+                <h1 class="text-base font-bold text-main whitespace-nowrap">Helper Tools</h1>
+                <div class="flex items-center bg-surface rounded-lg p-0.5 border border-border gap-0.5">
+                    <a href="version-control.html" class="nav-tab-idle px-3 py-1 rounded-md text-sm transition-colors">Version Control</a>
+                    <span class="nav-tab-active px-3 py-1 rounded-md text-sm">Release Notes</span>
+                </div>
             </div>
             <button id="theme-toggle" class="p-1.5 rounded-md text-muted hover:text-main hover:bg-surface transition-colors" title="Toggle Dark/Light Mode">
                 <svg id="icon-sun" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
@@ -127,20 +136,27 @@
                     </div>
                 </div>
 
-                <!-- App Name + Environment -->
+                <!-- App Name + Environment/Release -->
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="section-label" for="rn-app-name">App Name <span class="text-red-400">*</span></label>
-                        <input id="rn-app-name" type="text" class="input-base w-full rounded-md px-3 py-2 text-sm" placeholder="e.g. Spark Energy">
+                        <input id="rn-app-name" type="text" list="dl-app-names" autocomplete="off"
+                            class="input-base w-full rounded-md px-3 py-2 text-sm" placeholder="e.g. Spark Energy">
+                        <datalist id="dl-app-names"></datalist>
                     </div>
-                    <div>
-                        <label class="section-label" for="rn-env">Environment</label>
-                        <select id="rn-env" class="input-base w-full rounded-md px-3 py-2 text-sm appearance-none cursor-pointer">
-                            <option>Dev</option>
-                            <option>Staging</option>
-                            <option>UAT</option>
-                            <option>Production</option>
-                        </select>
+                    <div class="flex flex-col gap-2">
+                        <div>
+                            <label class="section-label" for="rn-env">Environment</label>
+                            <select id="rn-env" class="input-base w-full rounded-md px-3 py-2 text-sm appearance-none cursor-pointer">
+                                <option value="Dev">Dev</option>
+                                <option value="QA">QA</option>
+                                <option value="Prod">Prod</option>
+                            </select>
+                        </div>
+                        <label class="flex items-center gap-2 text-sm cursor-pointer font-medium text-primary">
+                            <input type="checkbox" id="rn-is-release" class="rounded border-border text-primary">
+                            Release Build
+                        </label>
                     </div>
                 </div>
 
@@ -148,15 +164,18 @@
                 <div id="version-row" class="grid gap-3">
                     <div>
                         <label class="section-label" id="rn-version-label" for="rn-version">Version <span class="text-red-400">*</span></label>
-                        <input id="rn-version" type="text" class="input-base w-full rounded-md px-3 py-2 text-sm" placeholder="e.g. 9.0.0">
+                        <input id="rn-version" type="text" inputmode="decimal" list="dl-versions" autocomplete="off"
+                            class="input-base w-full rounded-md px-3 py-2 text-sm" placeholder="e.g. 9.0.0">
+                        <datalist id="dl-versions"></datalist>
                     </div>
                     <div id="rn-build-wrap" class="hidden">
                         <label class="section-label" for="rn-build">Build Number <span class="text-red-400">*</span></label>
-                        <input id="rn-build" type="text" class="input-base w-full rounded-md px-3 py-2 text-sm" placeholder="e.g. 25">
+                        <input id="rn-build" type="text" inputmode="numeric"
+                            class="input-base w-full rounded-md px-3 py-2 text-sm" placeholder="e.g. 25">
                     </div>
                 </div>
 
-                <!-- Features + Patches side by side -->
+                <!-- Features + Patches -->
                 <div class="grid grid-cols-2 gap-3">
                     <div class="flex flex-col gap-2">
                         <span class="section-label">Features <span class="text-red-400">*</span></span>
@@ -176,6 +195,25 @@
                     <label class="section-label" for="rn-apk">APK Link <span class="text-red-400">*</span></label>
                     <input id="rn-apk" type="text" class="input-base w-full rounded-md px-3 py-2 text-sm" placeholder="https://...">
                 </div>
+
+                <!-- Play Store URL (Android + release) -->
+                <div id="rn-playstore-wrap" class="hidden">
+                    <label class="section-label" for="rn-playstore">Play Store URL <span class="text-red-400">*</span></label>
+                    <input id="rn-playstore" type="url" list="dl-playstore" autocomplete="off"
+                        class="input-base w-full rounded-md px-3 py-2 text-sm" placeholder="https://play.google.com/...">
+                    <datalist id="dl-playstore"></datalist>
+                </div>
+
+                <!-- App Store URL (iOS + release) -->
+                <div id="rn-appstore-wrap" class="hidden">
+                    <label class="section-label" for="rn-appstore">App Store URL <span class="text-red-400">*</span></label>
+                    <input id="rn-appstore" type="url" list="dl-appstore" autocomplete="off"
+                        class="input-base w-full rounded-md px-3 py-2 text-sm" placeholder="https://apps.apple.com/...">
+                    <datalist id="dl-appstore"></datalist>
+                </div>
+
+                <!-- Clear saved data -->
+                <button id="clear-history" class="text-xs text-muted hover:text-red-400 transition-colors underline self-start block">Clear saved data</button>
 
             </div>
 
@@ -215,35 +253,156 @@
         })();
 
         // State
-        const rnState = { platform: 'android' };
+        const rnState = { platform: 'android', isRelease: false };
 
-        const ACTIVE = ['border-focus', 'ring-1', 'ring-focus', 'bg-surface', 'text-main'];
-        const IDLE   = ['border-border', 'bg-card', 'text-muted', 'hover:border-focus'];
+        // ── History / autocomplete ────────────────────────────────────────────
+        const HIST = {
+            appNames:     'rn_app_names',
+            versions:     'rn_versions',
+            playstoreUrls:'rn_playstore_urls',
+            appstoreUrls: 'rn_appstore_urls',
+        };
+
+        function getHistory(key)          { return JSON.parse(localStorage.getItem(key) || '[]'); }
+        function addToHistory(key, value, max = 5) {
+            if (!value) return;
+            let arr = getHistory(key);
+            arr = [value, ...arr.filter(v => v !== value)].slice(0, max);
+            localStorage.setItem(key, JSON.stringify(arr));
+        }
+        function refreshDatalist(dlId, key) {
+            const dl = document.getElementById(dlId);
+            if (!dl) return;
+            dl.innerHTML = '';
+            getHistory(key).forEach(v => { const o = document.createElement('option'); o.value = v; dl.appendChild(o); });
+        }
+        function refreshAllDatalists() {
+            refreshDatalist('dl-app-names', HIST.appNames);
+            refreshDatalist('dl-versions',  HIST.versions);
+            refreshDatalist('dl-playstore', HIST.playstoreUrls);
+            refreshDatalist('dl-appstore',  HIST.appstoreUrls);
+        }
+
+        // Save on blur
+        document.getElementById('rn-app-name').addEventListener('blur', () => {
+            addToHistory(HIST.appNames, document.getElementById('rn-app-name').value.trim());
+            refreshDatalist('dl-app-names', HIST.appNames);
+        });
+        document.getElementById('rn-version').addEventListener('blur', () => {
+            addToHistory(HIST.versions, document.getElementById('rn-version').value.trim());
+            refreshDatalist('dl-versions', HIST.versions);
+        });
+        document.getElementById('rn-playstore').addEventListener('blur', () => {
+            addToHistory(HIST.playstoreUrls, document.getElementById('rn-playstore').value.trim());
+            refreshDatalist('dl-playstore', HIST.playstoreUrls);
+        });
+        document.getElementById('rn-appstore').addEventListener('blur', () => {
+            addToHistory(HIST.appstoreUrls, document.getElementById('rn-appstore').value.trim());
+            refreshDatalist('dl-appstore', HIST.appstoreUrls);
+        });
+
+        document.getElementById('clear-history').addEventListener('click', () => {
+            Object.values(HIST).forEach(k => localStorage.removeItem(k));
+            refreshAllDatalists();
+        });
+
+        // ── Platform ──────────────────────────────────────────────────────────
+        const PLAT_ACTIVE = ['border-focus', 'ring-1', 'ring-focus', 'bg-surface', 'text-main'];
+        const PLAT_IDLE   = ['border-border', 'bg-card', 'text-muted', 'hover:border-focus'];
 
         function rnSetPlatform(platform) {
             rnState.platform = platform;
-            const isAndroid = platform === 'android';
+            const isAndroid  = platform === 'android';
             const ab = document.getElementById('rn-btn-android');
             const ib = document.getElementById('rn-btn-ios');
-            ACTIVE.forEach(c => { ab.classList.toggle(c, isAndroid);  ib.classList.toggle(c, !isAndroid); });
-            IDLE.forEach(c   => { ab.classList.toggle(c, !isAndroid); ib.classList.toggle(c, isAndroid);  });
+            PLAT_ACTIVE.forEach(c => { ab.classList.toggle(c, isAndroid);  ib.classList.toggle(c, !isAndroid); });
+            PLAT_IDLE.forEach(c   => { ab.classList.toggle(c, !isAndroid); ib.classList.toggle(c, isAndroid);  });
 
-            const versionLabel = document.getElementById('rn-version-label');
-            versionLabel.innerHTML = isAndroid
-                ? 'Version <span class="text-red-400">*</span>'
-                : 'Testflight Version <span class="text-red-400">*</span>';
-
-            const buildWrap = document.getElementById('rn-build-wrap');
-            buildWrap.classList.toggle('hidden', isAndroid);
+            document.getElementById('rn-version-label').innerHTML =
+                (isAndroid ? 'Version' : 'Testflight Version') + ' <span class="text-red-400">*</span>';
 
             const versionRow = document.getElementById('version-row');
             versionRow.className = isAndroid ? 'grid gap-3' : 'grid grid-cols-2 gap-3';
+            document.getElementById('rn-build-wrap').classList.toggle('hidden', isAndroid);
 
             document.getElementById('rn-apk-wrap').classList.toggle('hidden', !isAndroid);
+            updateStoreUrlVisibility();
             rnUpdate();
         }
 
-        // Row factory
+        // ── Release build ────────────────────────────────────────────────────
+        function updateStoreUrlVisibility() {
+            const isAndroid = rnState.platform === 'android';
+            const isRelease = rnState.isRelease;
+            document.getElementById('rn-playstore-wrap').classList.toggle('hidden', !(isAndroid && isRelease));
+            document.getElementById('rn-appstore-wrap').classList.toggle('hidden', !(!isAndroid && isRelease));
+        }
+
+        document.getElementById('rn-is-release').addEventListener('change', function() {
+            rnState.isRelease = this.checked;
+            if (this.checked) {
+                // Force Prod when release is checked
+                document.getElementById('rn-env').value = 'Prod';
+            }
+            updateStoreUrlVisibility();
+            rnUpdate();
+        });
+
+        // Prevent env change while release build is active
+        document.getElementById('rn-env').addEventListener('change', function() {
+            if (rnState.isRelease && this.value !== 'Prod') {
+                this.value = 'Prod';
+                alert('Release builds are always Production. Uncheck "Release Build" first to change the environment.');
+            }
+            rnUpdate();
+        });
+
+        // ── Input helpers ────────────────────────────────────────────────────
+        function autoCapFirst(el) {
+            const v = el.value;
+            if (!v) return;
+            const capped = v[0].toUpperCase() + v.slice(1);
+            if (v !== capped) {
+                const pos = el.selectionStart;
+                el.value = capped;
+                el.setSelectionRange(pos, pos);
+            }
+        }
+
+        // Version: digits + dots only
+        document.getElementById('rn-version').addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9.]/g, '');
+            this.classList.remove('input-error');
+            document.getElementById('copy-error').classList.add('hidden');
+            rnUpdate();
+        });
+
+        // Build number: digits only
+        document.getElementById('rn-build').addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '');
+            this.classList.remove('input-error');
+            document.getElementById('copy-error').classList.add('hidden');
+            rnUpdate();
+        });
+
+        // App name: auto-capitalize + clear errors
+        document.getElementById('rn-app-name').addEventListener('input', function() {
+            autoCapFirst(this);
+            this.classList.remove('input-error');
+            document.getElementById('copy-error').classList.add('hidden');
+            rnUpdate();
+        });
+
+        // APK + store URL: clear errors on input
+        ['rn-apk', 'rn-playstore', 'rn-appstore'].forEach(id => {
+            document.getElementById(id).addEventListener('input', function() {
+                this.classList.remove('input-error');
+                document.getElementById('copy-error').classList.add('hidden');
+                rnUpdate();
+            });
+        });
+
+        // ── Row factory ───────────────────────────────────────────────────────
         function createRnRow(containerEl, placeholder) {
             const row = document.createElement('div');
             row.className = 'flex gap-1.5 rn-row items-center';
@@ -252,9 +411,11 @@
             input.type = 'text';
             input.className = 'input-base rounded-md px-2.5 py-1.5 text-sm flex-1 min-w-0';
             input.placeholder = placeholder || 'Enter item...';
-            input.addEventListener('input', () => {
-                input.classList.remove('input-error');
+            input.addEventListener('input', function() {
+                autoCapFirst(this);
+                this.classList.remove('input-error');
                 document.getElementById('fp-error').classList.add('hidden');
+                document.getElementById('copy-error').classList.add('hidden');
                 rnUpdate();
             });
 
@@ -262,11 +423,7 @@
             removeBtn.className = 'p-1 text-muted hover:text-[#ef4444] transition-colors rounded hover:bg-[#ef4444]/10 hidden shrink-0';
             removeBtn.title = 'Remove';
             removeBtn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`;
-            removeBtn.addEventListener('click', () => {
-                row.remove();
-                rnUpdateRowButtons(containerEl);
-                rnUpdate();
-            });
+            removeBtn.addEventListener('click', () => { row.remove(); rnUpdateRowButtons(containerEl); rnUpdate(); });
 
             row.appendChild(input);
             row.appendChild(removeBtn);
@@ -275,83 +432,111 @@
 
         function rnUpdateRowButtons(containerEl) {
             const rows = containerEl.querySelectorAll('.rn-row');
-            containerEl.querySelectorAll('.rn-row button').forEach(btn => {
-                btn.classList.toggle('hidden', rows.length <= 1);
-            });
+            containerEl.querySelectorAll('.rn-row button').forEach(btn => btn.classList.toggle('hidden', rows.length <= 1));
         }
 
-        // Build output — returns { html, plain } for both preview and clipboard
+        document.getElementById('rn-add-feature').addEventListener('click', () => {
+            const c = document.getElementById('rn-feature-rows');
+            c.appendChild(createRnRow(c, 'Feature...'));
+            rnUpdateRowButtons(c); rnUpdate();
+        });
+        document.getElementById('rn-add-patch').addEventListener('click', () => {
+            const c = document.getElementById('rn-patch-rows');
+            c.appendChild(createRnRow(c, 'Patch...'));
+            rnUpdateRowButtons(c); rnUpdate();
+        });
+
+        // ── Build output ──────────────────────────────────────────────────────
         function buildOutput() {
-            const platform = rnState.platform;
-            const appName  = document.getElementById('rn-app-name').value.trim();
-            const version  = document.getElementById('rn-version').value.trim();
-            const build    = document.getElementById('rn-build').value.trim();
-            const env      = document.getElementById('rn-env').value;
-            const apk      = document.getElementById('rn-apk').value.trim();
+            const platform  = rnState.platform;
+            const isAndroid = platform === 'android';
+            const appName   = document.getElementById('rn-app-name').value.trim();
+            const version   = document.getElementById('rn-version').value.trim();
+            const build     = document.getElementById('rn-build').value.trim();
+            const env       = document.getElementById('rn-env').value;
+            const apk       = document.getElementById('rn-apk').value.trim();
+            const playstore = document.getElementById('rn-playstore').value.trim();
+            const appstore  = document.getElementById('rn-appstore').value.trim();
+            const isRelease = rnState.isRelease;
 
-            const features = [...document.querySelectorAll('#rn-feature-rows .rn-row input')].map(i => i.value.trim()).filter(Boolean);
-            const patches  = [...document.querySelectorAll('#rn-patch-rows .rn-row input')].map(i => i.value.trim()).filter(Boolean);
+            const features  = [...document.querySelectorAll('#rn-feature-rows .rn-row input')].map(i => i.value.trim()).filter(Boolean);
+            const patches   = [...document.querySelectorAll('#rn-patch-rows .rn-row input')].map(i => i.value.trim()).filter(Boolean);
 
-            const isAndroid     = platform === 'android';
             const platformLabel = isAndroid ? 'Android' : 'iOS';
             const verLabel      = isAndroid ? 'Version' : 'Testflight Version';
             const verValue      = (!isAndroid && build) ? `${version} (${build})` : version;
 
-            const appLine  = `App Name: ${appName || '{App Name}'} - ${platformLabel}`;
-            const verLine  = `${verLabel}: ${verValue || '{version}'}`;
-            const envLine  = `Environment: ${env}`;
+            const appLine = `App Name: ${appName || '{App Name}'} - ${platformLabel}`;
+            const verLine = `${verLabel}: ${verValue || '{version}'}`;
+            const envLine = `Environment: ${env}`;
 
-            // HTML string (for rich-text clipboard + preview)
+            // HTML (for rich-text clipboard)
             let html = `${appLine}<br>${verLine}<br>${envLine}<br><br>`;
             html += `<strong><u>Release notes:</u></strong><br><br>`;
+
             if (features.length > 0) {
-                html += `<strong>Features:</strong><br>${features.join('<br>')}<br>`;
-                if (patches.length > 0 || (isAndroid && apk)) html += '<br>';
+                html += `<strong>Features:</strong><br>`;
+                html += features.map(f => `• ${f}`).join('<br>') + '<br>';
+                if (patches.length > 0 || (isAndroid && apk) || (isRelease && (playstore || appstore))) html += '<br>';
             }
             if (patches.length > 0) {
-                html += `<strong>Patches:</strong><br>${patches.join('<br>')}<br>`;
-                if (isAndroid && apk) html += '<br>';
+                html += `<strong>Patches:</strong><br>`;
+                html += patches.map(p => `• ${p}`).join('<br>') + '<br>';
+                if ((isAndroid && apk) || (isRelease && (playstore || appstore))) html += '<br>';
             }
-            if (isAndroid && apk) html += `APK Link:<br>${apk}`;
+            if (isAndroid && apk) {
+                html += `APK Link:<br>${apk}`;
+                if (isRelease && playstore) html += '<br><br>';
+            }
+            if (isAndroid && isRelease && playstore) {
+                html += `Play Store:<br>${playstore}`;
+            }
+            if (!isAndroid && isRelease && appstore) {
+                html += `App Store:<br>${appstore}`;
+            }
 
-            // Plain-text string (clipboard fallback)
-            let plain = `${appLine}\n${verLine}\nEnvironment: ${env}\n\nRelease notes:\n\n`;
+            // Plain text (clipboard fallback)
+            let plain = `${appLine}\n${verLine}\n${envLine}\n\nRelease notes:\n\n`;
             if (features.length > 0) {
-                plain += `Features:\n${features.join('\n')}\n`;
-                if (patches.length > 0 || (isAndroid && apk)) plain += '\n';
+                plain += `Features:\n${features.map(f => `• ${f}`).join('\n')}\n`;
+                if (patches.length > 0 || (isAndroid && apk) || (isRelease && (playstore || appstore))) plain += '\n';
             }
             if (patches.length > 0) {
-                plain += `Patches:\n${patches.join('\n')}\n`;
-                if (isAndroid && apk) plain += '\n';
+                plain += `Patches:\n${patches.map(p => `• ${p}`).join('\n')}\n`;
+                if ((isAndroid && apk) || (isRelease && (playstore || appstore))) plain += '\n';
             }
-            if (isAndroid && apk) plain += `APK Link:\n${apk}`;
+            if (isAndroid && apk) {
+                plain += `APK Link:\n${apk}`;
+                if (isRelease && playstore) plain += '\n\n';
+            }
+            if (isAndroid && isRelease && playstore) plain += `Play Store:\n${playstore}`;
+            if (!isAndroid && isRelease && appstore)  plain += `App Store:\n${appstore}`;
 
-            return { html, plain, appName, version, build, apk, features, patches, isAndroid };
+            return { html, plain, appName, version, build, apk, playstore, appstore, features, patches, isAndroid, isRelease };
         }
 
         function rnUpdate() {
-            const { html } = buildOutput();
-            document.getElementById('rn-output').innerHTML = html;
+            document.getElementById('rn-output').innerHTML = buildOutput().html;
         }
 
-        // Validation
+        // ── Validation ────────────────────────────────────────────────────────
         function validate() {
-            const { appName, version, build, apk, features, patches, isAndroid } = buildOutput();
+            const { appName, version, build, apk, playstore, appstore, features, patches, isAndroid, isRelease } = buildOutput();
             let ok = true;
+            const mark = (id, bad) => document.getElementById(id).classList.toggle('input-error', bad);
 
-            const mark = (id, bad) => {
-                const el = document.getElementById(id);
-                el.classList.toggle('input-error', bad);
-            };
+            mark('rn-app-name',  !appName);
+            mark('rn-version',   !version);
+            if (!isAndroid)              mark('rn-build',     !build);
+            if (isAndroid)               mark('rn-apk',       !apk);
+            if (isAndroid && isRelease)  mark('rn-playstore', !playstore);
+            if (!isAndroid && isRelease) mark('rn-appstore',  !appstore);
 
-            mark('rn-app-name', !appName);
-            mark('rn-version',  !version);
-            if (!isAndroid) mark('rn-build', !build);
-            if (isAndroid)  mark('rn-apk',   !apk);
-
-            if (!appName || !version) ok = false;
-            if (!isAndroid && !build) ok = false;
-            if (isAndroid  && !apk)   ok = false;
+            if (!appName || !version)                      ok = false;
+            if (!isAndroid && !build)                      ok = false;
+            if (isAndroid  && !apk)                        ok = false;
+            if (isAndroid  && isRelease && !playstore)     ok = false;
+            if (!isAndroid && isRelease && !appstore)      ok = false;
 
             const noItems = features.length === 0 && patches.length === 0;
             document.getElementById('fp-error').classList.toggle('hidden', !noItems);
@@ -361,22 +546,12 @@
             return ok;
         }
 
-        // Clear error on input
-        ['rn-app-name', 'rn-version', 'rn-build', 'rn-apk'].forEach(id => {
-            document.getElementById(id).addEventListener('input', () => {
-                document.getElementById(id).classList.remove('input-error');
-                document.getElementById('copy-error').classList.add('hidden');
-                rnUpdate();
-            });
-        });
-        document.getElementById('rn-env').addEventListener('change', rnUpdate);
-
-        // Copy — rich HTML to clipboard so formatting pastes into Google Chat
+        // ── Copy ──────────────────────────────────────────────────────────────
         document.getElementById('rn-copy-btn').addEventListener('click', async () => {
             if (!validate()) return;
 
             const btn = document.getElementById('rn-copy-btn');
-            const { html, plain } = buildOutput();
+            const { html, plain, appName, version, playstore, appstore, isAndroid, isRelease } = buildOutput();
 
             const showCopied = () => {
                 const orig = btn.textContent;
@@ -390,12 +565,18 @@
                 }, 1800);
             };
 
-            const fullHtml = `<!DOCTYPE html><html><body>${html}</body></html>`;
+            // Save to history on successful copy
+            addToHistory(HIST.appNames, appName);
+            addToHistory(HIST.versions, version);
+            if (isAndroid && isRelease) addToHistory(HIST.playstoreUrls, playstore);
+            if (!isAndroid && isRelease) addToHistory(HIST.appstoreUrls, appstore);
+            refreshAllDatalists();
 
+            const fullHtml = `<!DOCTYPE html><html><body>${html}</body></html>`;
             try {
                 if (navigator.clipboard && window.ClipboardItem) {
                     await navigator.clipboard.write([new ClipboardItem({
-                        'text/html': new Blob([fullHtml], { type: 'text/html' }),
+                        'text/html':  new Blob([fullHtml], { type: 'text/html' }),
                         'text/plain': new Blob([plain],   { type: 'text/plain' }),
                     })]);
                 } else {
@@ -403,32 +584,16 @@
                 }
                 showCopied();
             } catch {
-                // execCommand fallback
                 const ta = document.createElement('textarea');
-                ta.value = plain;
-                ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0';
-                document.body.appendChild(ta);
-                ta.select();
-                try { document.execCommand('copy'); showCopied(); } catch (e) { console.error(e); }
+                ta.value = plain; ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0';
+                document.body.appendChild(ta); ta.select();
+                try { document.execCommand('copy'); showCopied(); } catch(e) { console.error(e); }
                 document.body.removeChild(ta);
             }
         });
 
-        // Add row buttons
-        document.getElementById('rn-add-feature').addEventListener('click', () => {
-            const c = document.getElementById('rn-feature-rows');
-            c.appendChild(createRnRow(c, 'Feature...'));
-            rnUpdateRowButtons(c);
-            rnUpdate();
-        });
-        document.getElementById('rn-add-patch').addEventListener('click', () => {
-            const c = document.getElementById('rn-patch-rows');
-            c.appendChild(createRnRow(c, 'Patch...'));
-            rnUpdateRowButtons(c);
-            rnUpdate();
-        });
-
-        // Init
+        // ── Init ──────────────────────────────────────────────────────────────
+        refreshAllDatalists();
         const fc = document.getElementById('rn-feature-rows');
         const pc = document.getElementById('rn-patch-rows');
         fc.appendChild(createRnRow(fc, 'Feature...'));
