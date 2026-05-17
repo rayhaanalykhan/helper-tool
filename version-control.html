@@ -191,6 +191,11 @@
 
             </div>
         </main>
+
+        <footer class="text-center text-xs text-muted py-2">
+            Last released: <span id="last-updated"></span>
+        </footer>
+
     </div>
 
     <script>
@@ -470,6 +475,9 @@
         elTicketRows.appendChild(createTicketRow());
         updateRemoveButtons();
         triggerUpdate();
+
+        const d = new Date(document.lastModified);
+        document.getElementById('last-updated').textContent = d.toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
     </script>
 </body>
 </html>
