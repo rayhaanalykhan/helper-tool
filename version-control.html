@@ -198,19 +198,14 @@
             </div>
         </main>
 
-        <!-- Last Release Date -->
-        <div class="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
-            <div class="px-5 py-3.5 flex items-center gap-2.5">
-                <div class="p-1.5 rounded-lg bg-surface shrink-0">
-                    <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                </div>
-                <span class="text-sm font-semibold text-main">Last released: <span id="last-updated" class="font-normal text-muted"></span></span>
-            </div>
-        </div>
+        <p class="text-center text-xs pb-2" style="color:var(--text-muted);">Last released: <span id="last-updated"></span></p>
 
     </div>
 
-    <script src="shared.js?v=20260523-3"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="shared.js?v=20260523-4"></script>
     <script>
         const changeTypes = [
             { id: 'feat',     title: 'feat',     sub: 'new feature' },

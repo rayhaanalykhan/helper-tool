@@ -1,14 +1,26 @@
 # macOS
 .DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+desktop.ini
 
 # Claude Code project settings (local tooling, not part of the app)
 .claude/
 
-# Local overrides
-settings.local.json
+# Environment / secrets
+.env
+.env.*
 
 # Logs
 *.log
+
+# Editor temp files
+*.swp
+*.swo
+*~
 
 # Dependencies (if ever added)
 node_modules/
