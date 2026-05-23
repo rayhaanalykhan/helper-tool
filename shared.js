@@ -1,6 +1,8 @@
 (function () {
     'use strict';
 
+    var APP_VERSION = '20260523-3';
+
     // ── Config ────────────────────────────────────────────────────────────────
     // Paste your Firebase project config here.
     // Get it from: Firebase Console → Project Settings → Your apps → SDK setup
@@ -393,7 +395,6 @@
 
     // ── Update Checker ────────────────────────────────────────────────────────
     function initUpdateChecker() {
-        if (typeof APP_VERSION === 'undefined') return;
         var loadedVersion = APP_VERSION;
         var dismissed = false;
 
@@ -403,7 +404,7 @@
 
         function doCheck() {
             if (dismissed) return;
-            fetch('changelog.js?_=' + Date.now(), { cache: 'no-store' })
+            fetch('shared.js?_=' + Date.now(), { cache: 'no-store' })
                 .then(function (r) { return r.text(); })
                 .then(function (text) {
                     var m = text.match(/APP_VERSION\s*=\s*['"]([^'"]+)['"]/);

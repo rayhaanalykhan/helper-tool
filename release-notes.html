@@ -693,17 +693,6 @@
             if (isAndroid && isRelease) addToHistory(HIST.playstoreUrls, playstore);
             if (!isAndroid && isRelease) addToHistory(HIST.appstoreUrls, appstore);
 
-            const displayVersion = (!isAndroid && build) ? `${version} (${build})` : version;
-            localStorage.setItem('rn_last_release_structured', JSON.stringify({
-                appName,
-                platform: isAndroid ? 'Android' : 'iOS',
-                version: displayVersion,
-                env: currentEnv,
-                features,
-                patches,
-                date: new Date().toISOString()
-            }));
-
             const fullHtml = `<!DOCTYPE html><html><body>${html}</body></html>`;
             try {
                 if (navigator.clipboard && window.ClipboardItem) {
