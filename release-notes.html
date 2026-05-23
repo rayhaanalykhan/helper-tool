@@ -259,28 +259,6 @@
                     <p id="rn-appstore-live" class="hidden text-xs mt-1" style="color:var(--text-muted);"></p>
                 </div>
 
-                <!-- Google Chat Webhooks — visible only when sendToChat permission is granted -->
-                <div id="gchat-section" class="border-t border-border pt-4" style="display:none;">
-                    <button id="gchat-toggle" type="button" onclick="toggleGchatSection()"
-                        class="flex items-center justify-between w-full">
-                        <span class="section-label mb-0 flex items-center gap-1.5">
-                            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4C2.9 2 2 2.9 2 4v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>
-                            Google Chat
-                        </span>
-                        <svg id="gchat-chevron" class="w-4 h-4 text-muted transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                    </button>
-                    <div id="gchat-body" class="hidden mt-3 space-y-2">
-                        <div id="gchat-webhook-list"></div>
-                        <div class="grid gap-1.5" style="grid-template-columns:1fr 2fr auto;">
-                            <input id="gchat-new-label" type="text" class="input-base rounded-md px-2.5 py-1.5 text-sm" placeholder="Label">
-                            <input id="gchat-new-url" type="url" class="input-base rounded-md px-2.5 py-1.5 text-sm" placeholder="Webhook URL">
-                            <button type="button" onclick="addGchatWebhook()" class="bg-primary hover:bg-blue-600 text-white rounded-md px-3 py-1.5 text-sm font-medium transition-colors whitespace-nowrap">Add</button>
-                        </div>
-                        <p id="gchat-add-error" class="hidden text-xs text-red-400"></p>
-                        <p class="text-xs text-muted leading-relaxed">Get a webhook URL from a Google Chat space → Apps & integrations → Webhooks.</p>
-                    </div>
-                </div>
-
             </div>
 
             <!-- RIGHT: Output -->
@@ -320,9 +298,8 @@
         window.htOnAuthReady = function () {
             var can = window.htCan('sendToChat');
             var s = document.getElementById('send-btn-wrap');
-            var g = document.getElementById('gchat-section');
             if (s) s.style.display = can ? '' : 'none';
-            if (g) g.style.display = can ? '' : 'none';
+            if (can) renderSendDropdown();
         };
 
         // ── Theme ─────────────────────────────────────────────────────────────
@@ -818,106 +795,51 @@
         const d = new Date(document.lastModified);
         document.getElementById('last-updated').textContent = formatDateAmPm(d);
 
-        // ── Google Chat Webhooks ──────────────────────────────────────────────
-        const GCHAT_KEY = 'rn_gchat_webhooks';
-
-        function getWebhooks() { return JSON.parse(localStorage.getItem(GCHAT_KEY) || '[]'); }
-        function saveWebhooks(arr) { localStorage.setItem(GCHAT_KEY, JSON.stringify(arr)); }
-
+        // ── Google Chat Webhooks (loaded from Firestore, managed by admin) ──────
         function escHtml(str) {
             return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
         }
 
-        function renderWebhookList() {
-            const list  = document.getElementById('gchat-webhook-list');
-            const hooks = getWebhooks();
-            list.innerHTML = '';
-            if (!hooks.length) {
-                list.innerHTML = '<p class="text-xs" style="color:var(--text-muted);">No webhooks saved yet.</p>';
-            } else {
-                hooks.forEach((hook, i) => {
-                    const row = document.createElement('div');
-                    row.className = 'flex items-center gap-2 py-1';
-                    row.innerHTML = `
-                        <div class="flex-1 min-w-0">
-                            <span class="text-sm font-medium" style="color:var(--text-main);">${escHtml(hook.label)}</span>
-                            <span class="text-xs ml-1.5" style="color:var(--text-muted);">${escHtml(hook.url.length > 40 ? hook.url.substring(0,40)+'…' : hook.url)}</span>
-                        </div>
-                        <button type="button" class="shrink-0 p-0.5 rounded transition-colors" style="color:var(--text-muted);" title="Remove"
-                            onmouseover="this.style.color='#ef4444'" onmouseleave="this.style.color='var(--text-muted)'"
-                            onclick="removeWebhook(${i})">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                        </button>`;
-                    list.appendChild(row);
-                });
-            }
-            renderSendDropdown();
+        var _cachedWebhooks = null;
+
+        function loadWebhooksFromFirestore(callback) {
+            if (_cachedWebhooks !== null) { callback(_cachedWebhooks); return; }
+            window.htFirebase.db.collection('settings').doc('gchat').get()
+                .then(function (snap) {
+                    _cachedWebhooks = (snap.exists && Array.isArray(snap.data().webhooks)) ? snap.data().webhooks : [];
+                    callback(_cachedWebhooks);
+                })
+                .catch(function () { _cachedWebhooks = []; callback([]); });
         }
 
         function renderSendDropdown() {
-            const dd    = document.getElementById('send-dropdown');
-            const hooks = getWebhooks();
-            dd.innerHTML = '';
-            if (!hooks.length) {
-                dd.innerHTML = '<div class="px-3 py-2.5 text-xs" style="color:var(--text-muted);">No webhooks configured.<br>Add one in the Google Chat section below.</div>';
-            } else {
-                hooks.forEach(hook => {
-                    const btn = document.createElement('button');
-                    btn.type      = 'button';
-                    btn.className = 'w-full text-left px-3 py-2 text-sm custom-dropdown-item transition-colors';
-                    btn.style.color = 'var(--text-main)';
-                    btn.textContent = hook.label;
-                    btn.addEventListener('click', () => {
-                        document.getElementById('send-dropdown').classList.add('hidden');
-                        sendToGchat(hook);
+            const dd = document.getElementById('send-dropdown');
+            dd.innerHTML = '<div class="px-3 py-2.5 text-xs" style="color:var(--text-muted);">Loading…</div>';
+            loadWebhooksFromFirestore(function (hooks) {
+                dd.innerHTML = '';
+                if (!hooks.length) {
+                    dd.innerHTML = '<div class="px-3 py-2.5 text-xs" style="color:var(--text-muted);">No spaces configured yet.<br>Ask an admin to add one in Settings.</div>';
+                } else {
+                    hooks.forEach(function (hook) {
+                        const btn = document.createElement('button');
+                        btn.type      = 'button';
+                        btn.className = 'w-full text-left px-3 py-2 text-sm custom-dropdown-item transition-colors';
+                        btn.style.color = 'var(--text-main)';
+                        btn.textContent = hook.label;
+                        btn.addEventListener('click', function () {
+                            document.getElementById('send-dropdown').classList.add('hidden');
+                            sendToGchat(hook);
+                        });
+                        dd.appendChild(btn);
                     });
-                    dd.appendChild(btn);
-                });
-            }
-        }
-
-        function removeWebhook(index) {
-            const hooks = getWebhooks();
-            hooks.splice(index, 1);
-            saveWebhooks(hooks);
-            renderWebhookList();
-        }
-
-        function addGchatWebhook() {
-            const label = document.getElementById('gchat-new-label').value.trim();
-            const url   = document.getElementById('gchat-new-url').value.trim();
-            const errEl = document.getElementById('gchat-add-error');
-            errEl.classList.add('hidden');
-            if (!label) {
-                errEl.textContent = 'Please enter a label.';
-                errEl.classList.remove('hidden');
-                return;
-            }
-            if (!url || !url.startsWith('https://chat.googleapis.com/')) {
-                errEl.textContent = 'Enter a valid Google Chat webhook URL (starts with https://chat.googleapis.com/).';
-                errEl.classList.remove('hidden');
-                return;
-            }
-            const hooks = getWebhooks();
-            hooks.push({ label, url });
-            saveWebhooks(hooks);
-            document.getElementById('gchat-new-label').value = '';
-            document.getElementById('gchat-new-url').value   = '';
-            renderWebhookList();
-        }
-
-        function toggleGchatSection() {
-            const body    = document.getElementById('gchat-body');
-            const chevron = document.getElementById('gchat-chevron');
-            const isHidden = body.classList.toggle('hidden');
-            chevron.style.transform = isHidden ? '' : 'rotate(180deg)';
-            if (!isHidden) renderWebhookList();
+                }
+            });
         }
 
         function toggleSendDropdown() {
             const dd = document.getElementById('send-dropdown');
             const isHidden = dd.classList.toggle('hidden');
-            if (!isHidden) renderSendDropdown();
+            if (!isHidden) { _cachedWebhooks = null; renderSendDropdown(); }
         }
 
         async function sendToGchat(hook) {
@@ -953,8 +875,6 @@
             const dd   = document.getElementById('send-dropdown');
             if (wrap && !wrap.contains(e.target)) dd.classList.add('hidden');
         });
-
-        renderSendDropdown();
     </script>
     <!-- Custom Alert Modal -->
     <div id="custom-alert-overlay" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;">

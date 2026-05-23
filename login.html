@@ -136,7 +136,7 @@
         var fbApp  = firebase.apps.length ? firebase.app() : firebase.initializeApp(FIREBASE_CONFIG);
         var fbAuth = firebase.auth(fbApp);
 
-        var returnTo = sessionStorage.getItem('ht_return_to') || 'index.html';
+        var returnTo = sessionStorage.getItem('ht_return_to') || 'settings.html';
 
         // Redirect if already signed in
         fbAuth.onAuthStateChanged(function (user) {

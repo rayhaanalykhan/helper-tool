@@ -59,7 +59,7 @@
             var isAdmin = (userData.role === 'admin');
             widget.innerHTML =
                 (isAdmin
-                    ? '<a href="admin.html" style="font-size:0.75rem;font-weight:600;' +
+                    ? '<a href="settings.html" style="font-size:0.75rem;font-weight:600;' +
                       'color:var(--primary);text-decoration:none;padding:0.2rem 0.5rem;' +
                       'border:1px solid var(--primary);border-radius:0.3rem;opacity:0.8;' +
                       'transition:opacity 0.15s;" onmouseover="this.style.opacity=\'1\'"' +

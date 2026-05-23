@@ -98,7 +98,7 @@
 
     <div class="max-w-6xl mx-auto space-y-6">
 
-        <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-card p-4 rounded-xl border border-border shadow-sm">
+        <header class="flex justify-between items-center bg-card p-4 rounded-xl border border-border shadow-sm">
             <div class="flex items-center gap-3 flex-wrap">
                 <a href="index.html" class="text-base font-bold text-main whitespace-nowrap hover:text-primary transition-colors">Helper Tools</a>
                 <div class="flex items-center bg-surface rounded-lg p-0.5 border border-border gap-0.5">
@@ -112,12 +112,7 @@
                     </a>
                 </div>
             </div>
-
-            <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
-                <input type="text" id="username" placeholder="Username" class="input-base rounded-md px-3 py-1.5 text-sm w-32" title="Your username for branch names">
-                <input type="text" id="global-prefix" placeholder="SPRK-" class="input-base rounded-md px-3 py-1.5 text-sm w-24 uppercase" title="Global ticket prefix">
-                <button id="forget-btn" class="text-xs text-muted hover:text-red-400 underline transition-colors hidden whitespace-nowrap" title="Clear saved settings">Forget</button>
-                <div class="h-6 w-px bg-border mx-1"></div>
+            <div class="flex items-center gap-2">
                 <button id="theme-toggle" class="p-1.5 rounded-md text-muted hover:text-main hover:bg-surface transition-colors" title="Toggle Dark/Light Mode">
                     <svg id="icon-sun" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                     <svg id="icon-moon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
@@ -227,8 +222,6 @@
             test:     ["Add Unit Tests for Payment Service", "Refactor Auth Integration Tests", "Add Missing Edge Case Tests"]
         };
 
-        const elUsername    = document.getElementById('username');
-        const elGlobalPrefix = document.getElementById('global-prefix');
         const elThemeToggle = document.getElementById('theme-toggle');
         const elTypeGrid    = document.getElementById('type-grid');
         const elTicketRows  = document.getElementById('ticket-rows');
@@ -262,61 +255,13 @@
         // State
         const state = { username: '', ticketPrefix: 'SPRK-', type: '', noTicket: false, isRelease: false };
 
-        // Settings — always remembered
-        function updateForgetBtn() {
-            const hasSaved = localStorage.getItem('ostrom_user') !== null;
-            document.getElementById('forget-btn').classList.toggle('hidden', !hasSaved);
-        }
-
+        // Load settings from localStorage (configured in Settings page)
         const initSettings = () => {
             const savedUser   = localStorage.getItem('ostrom_user');
             const savedPrefix = localStorage.getItem('ostrom_prefix');
             state.username    = savedUser || '';
-            if (savedPrefix) {
-                state.ticketPrefix = savedPrefix;
-            } else {
-                state.ticketPrefix = 'SPRK-';
-            }
-            elUsername.value     = state.username;
-            elGlobalPrefix.value = state.ticketPrefix;
-            updateForgetBtn();
+            state.ticketPrefix = savedPrefix || 'SPRK-';
         };
-
-        const handleSettingsChange = () => {
-            const oldUser = elUsername.value;
-            const newUser = oldUser.toLowerCase();
-            if (oldUser !== newUser) {
-                const isFocused = document.activeElement === elUsername;
-                const s = elUsername.selectionStart, e = elUsername.selectionEnd;
-                elUsername.value = newUser;
-                if (isFocused) elUsername.setSelectionRange(s, e);
-            }
-            state.username = elUsername.value.trim();
-            const rawPrefix  = elGlobalPrefix.value.trim().toUpperCase();
-            state.ticketPrefix = rawPrefix || 'SPRK-';
-
-            localStorage.setItem('ostrom_user',   state.username);
-            localStorage.setItem('ostrom_prefix', state.ticketPrefix);
-            updateForgetBtn();
-
-            document.querySelectorAll('.ticket-prefix-display').forEach(el => { el.innerText = state.ticketPrefix; });
-            triggerUpdate();
-        };
-
-        document.getElementById('forget-btn').addEventListener('click', () => {
-            localStorage.removeItem('ostrom_user');
-            localStorage.removeItem('ostrom_prefix');
-            elUsername.value     = '';
-            elGlobalPrefix.value = 'SPRK-';
-            state.username       = '';
-            state.ticketPrefix   = 'SPRK-';
-            document.querySelectorAll('.ticket-prefix-display').forEach(el => { el.innerText = 'SPRK-'; });
-            updateForgetBtn();
-            triggerUpdate();
-        });
-
-        elUsername.addEventListener('input', handleSettingsChange);
-        elGlobalPrefix.addEventListener('input', handleSettingsChange);
 
         // Type grid — examples are read-only (not clickable)
         const renderTypes = () => {
