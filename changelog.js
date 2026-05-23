@@ -1,7 +1,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // APP VERSION  →  bump this string each time you deploy so users with stale
 //                 tabs see the "new version available" banner automatically.
-const APP_VERSION = '20260523-1';
+const APP_VERSION = '20260523-2';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // TOOL CHANGELOG
@@ -22,7 +22,7 @@ const TOOL_CHANGELOG = [
         color: '#10b981',
         bg:    'rgba(16,185,129,0.12)',
         items: [
-            "Suggest a change or request a new tool using the chat button in the bottom-right corner — no email needed, just type and send",
+            "Public suggestions board — tap the chat button (bottom-right) to post a suggestion or see what others have requested. No login, no email.",
             "Stale tab? A banner now appears at the top when a new version is available, so you never miss an update",
         ]
     },
