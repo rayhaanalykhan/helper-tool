@@ -1,7 +1,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // APP VERSION  →  bump this string each time you deploy so users with stale
 //                 tabs see the "new version available" banner automatically.
-const APP_VERSION = '20260523-2';
+const APP_VERSION = '20260523-3';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // TOOL CHANGELOG
