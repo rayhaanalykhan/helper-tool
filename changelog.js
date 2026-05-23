@@ -1,4 +1,9 @@
 // ─────────────────────────────────────────────────────────────────────────────
+// APP VERSION  →  bump this string each time you deploy so users with stale
+//                 tabs see the "new version available" banner automatically.
+const APP_VERSION = '20260523-1';
+
+// ─────────────────────────────────────────────────────────────────────────────
 // TOOL CHANGELOG
 // Edit this file to update the "What's new" section on every page.
 //
@@ -17,8 +22,8 @@ const TOOL_CHANGELOG = [
         color: '#10b981',
         bg:    'rgba(16,185,129,0.12)',
         items: [
-            "Every page now shows a \"What's new\" section right below the release date — just like this one",
-            "Navigation tabs now show a small icon for each tool so it's easier to tell where you are at a glance",
+            "Suggest a change or request a new tool using the chat button in the bottom-right corner — no email needed, just type and send",
+            "Stale tab? A banner now appears at the top when a new version is available, so you never miss an update",
         ]
     },
     {
@@ -26,16 +31,7 @@ const TOOL_CHANGELOG = [
         color: 'var(--primary)',
         bg:    'rgba(59,130,246,0.12)',
         items: [
-            "Releasing to Android with Release Build on? The APK Link field now hides itself — just enter the Play Store URL and you're done",
-            "Trying to switch the environment while Release Build is on? You'll now see a clean in-app message instead of a browser popup",
-        ]
-    },
-    {
-        label: 'Fixed',
-        color: '#f59e0b',
-        bg:    'rgba(245,158,11,0.12)',
-        items: [
-            "Your ticket prefix now stays exactly as you typed it — no more automatic dash being quietly added at the end",
+            "Hovering the info icon on a change type now shows read-only examples — clicking them does nothing, so no accidental type selections",
         ]
     },
 ];
