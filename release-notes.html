@@ -182,6 +182,21 @@
                     </div>
                 </div>
 
+                <!-- Rollout + Status (release builds only) -->
+                <div id="rn-rollout-status-row" class="hidden grid gap-3">
+                    <div id="rn-rollout-wrap" class="hidden">
+                        <label class="section-label" for="rn-rollout">Rollout</label>
+                        <input id="rn-rollout" type="text" inputmode="numeric"
+                            class="input-base w-full rounded-md px-3 py-2 text-sm" placeholder="e.g. 50">
+                    </div>
+                    <div>
+                        <span class="section-label">Status</span>
+                        <div class="input-base rounded-md px-3 py-2 text-sm select-none cursor-default" style="color:var(--text-muted);">
+                            🟡 <span style="color:var(--text-main);font-weight:500;">Waiting for Review</span>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Version + Build -->
                 <div id="version-row" class="grid gap-3">
                     <div>
@@ -220,24 +235,26 @@
                     <input id="rn-apk" type="text" class="input-base w-full rounded-md px-3 py-2 text-sm" placeholder="https://...">
                 </div>
 
-                <!-- Play Store URL -->
+                <!-- PlayStore URL -->
                 <div id="rn-playstore-wrap" class="hidden">
-                    <label class="section-label" for="rn-playstore">Play Store URL <span class="text-red-400">*</span></label>
+                    <label class="section-label" for="rn-playstore">PlayStore URL <span class="text-red-400">*</span></label>
                     <div class="relative">
                         <input id="rn-playstore" type="url" autocomplete="off"
                             class="input-base w-full rounded-md px-3 py-2 text-sm" placeholder="https://play.google.com/...">
                         <div id="dd-playstore" class="hidden custom-dropdown absolute z-30 left-0 right-0 mt-1 rounded-lg overflow-hidden"></div>
                     </div>
+                    <p id="rn-playstore-live" class="hidden text-xs mt-1" style="color:var(--text-muted);"></p>
                 </div>
 
-                <!-- App Store URL -->
+                <!-- AppStore URL -->
                 <div id="rn-appstore-wrap" class="hidden">
-                    <label class="section-label" for="rn-appstore">App Store URL <span class="text-red-400">*</span></label>
+                    <label class="section-label" for="rn-appstore">AppStore URL <span class="text-red-400">*</span></label>
                     <div class="relative">
                         <input id="rn-appstore" type="url" autocomplete="off"
                             class="input-base w-full rounded-md px-3 py-2 text-sm" placeholder="https://apps.apple.com/...">
                         <div id="dd-appstore" class="hidden custom-dropdown absolute z-30 left-0 right-0 mt-1 rounded-lg overflow-hidden"></div>
                     </div>
+                    <p id="rn-appstore-live" class="hidden text-xs mt-1" style="color:var(--text-muted);"></p>
                 </div>
 
             </div>
@@ -445,10 +462,15 @@
         function updateStoreUrlVisibility() {
             const isAndroid = rnState.platform === 'android';
             const isRelease = rnState.isRelease;
-            // APK is hidden for Android release builds — the live Play Store URL serves this purpose
             document.getElementById('rn-apk-wrap').classList.toggle('hidden', !isAndroid || isRelease);
             document.getElementById('rn-playstore-wrap').classList.toggle('hidden', !(isAndroid && isRelease));
             document.getElementById('rn-appstore-wrap').classList.toggle('hidden', !(!isAndroid && isRelease));
+            const statusRow   = document.getElementById('rn-rollout-status-row');
+            const rolloutWrap = document.getElementById('rn-rollout-wrap');
+            statusRow.classList.toggle('hidden', !isRelease);
+            rolloutWrap.classList.toggle('hidden', !isAndroid);
+            statusRow.classList.toggle('grid-cols-2', isAndroid && isRelease);
+            statusRow.classList.toggle('grid-cols-1', !isAndroid && isRelease);
         }
 
         document.getElementById('rn-is-release').addEventListener('change', function() {
@@ -482,13 +504,23 @@
             this.value = this.value.replace(/[^0-9]/g, '');
             clearError('rn-build'); rnUpdate();
         });
+        document.getElementById('rn-rollout').addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '');
+            rnUpdate();
+        });
         document.getElementById('rn-app-name').addEventListener('input', function() {
             autoCapFirst(this); clearError('rn-app-name'); rnUpdate();
         });
-        ['rn-apk', 'rn-playstore', 'rn-appstore'].forEach(id => {
-            document.getElementById(id).addEventListener('input', function() {
-                clearError(id); rnUpdate();
-            });
+        document.getElementById('rn-apk').addEventListener('input', function() {
+            clearError('rn-apk'); rnUpdate();
+        });
+        document.getElementById('rn-playstore').addEventListener('input', function() {
+            clearError('rn-playstore'); rnUpdate();
+            fetchLiveVersion('android', this.value.trim());
+        });
+        document.getElementById('rn-appstore').addEventListener('input', function() {
+            clearError('rn-appstore'); rnUpdate();
+            fetchLiveVersion('ios', this.value.trim());
         });
 
         // ── Row factory ───────────────────────────────────────────────────────
@@ -557,11 +589,25 @@
             const verLabel      = isAndroid ? 'Version' : 'Testflight Version';
             const verValue      = (!isAndroid && build) ? `${version} (${build})` : version;
 
+            const rolloutEl = document.getElementById('rn-rollout');
+            const rollout   = (isAndroid && isRelease && rolloutEl) ? rolloutEl.value.trim() : '';
+
             const appLine = `App Name: ${appName || '{App Name}'} - ${platformLabel}`;
             const verLine = `${verLabel}: ${verValue || '{version}'}`;
             const envLine = `Environment: ${env}`;
 
-            let html  = `${appLine}<br>${verLine}<br>${envLine}<br><br>`;
+            let headerHtml  = `${appLine}<br>${verLine}<br>${envLine}<br>`;
+            let headerPlain = `${appLine}\n${verLine}\n${envLine}\n`;
+            if (isAndroid && isRelease && rollout) {
+                headerHtml  += `Rollout: ${rollout}%<br>`;
+                headerPlain += `Rollout: ${rollout}%\n`;
+            }
+            if (isRelease) {
+                headerHtml  += `Status: 🟡 Waiting for Review<br>`;
+                headerPlain += `Status: 🟡 Waiting for Review\n`;
+            }
+
+            let html  = headerHtml + '<br>';
             html += `<strong><u>Release notes:</u></strong><br><br>`;
 
             if (features.length > 0) {
@@ -575,10 +621,10 @@
             if (isAndroid && !isRelease && apk) {
                 html += `APK Link:<br>${apk}`;
             }
-            if (isAndroid && isRelease && playstore) html += `Play Store:<br>${playstore}`;
-            if (!isAndroid && isRelease && appstore)  html += `App Store:<br>${appstore}`;
+            if (isAndroid && isRelease && playstore) html += `PlayStore link:<br>${playstore}`;
+            if (!isAndroid && isRelease && appstore)  html += `AppStore link:<br>${appstore}`;
 
-            let plain = `${appLine}\n${verLine}\n${envLine}\n\nRelease notes:\n\n`;
+            let plain = headerPlain + '\nRelease notes:\n\n';
             if (features.length > 0) {
                 plain += `Features:\n${features.map(f => `• ${f}`).join('\n')}\n`;
                 if (patches.length > 0 || (isAndroid && apk) || (isRelease && (playstore || appstore))) plain += '\n';
@@ -590,10 +636,10 @@
             if (isAndroid && !isRelease && apk) {
                 plain += `APK Link:\n${apk}`;
             }
-            if (isAndroid && isRelease && playstore) plain += `Play Store:\n${playstore}`;
-            if (!isAndroid && isRelease && appstore)  plain += `App Store:\n${appstore}`;
+            if (isAndroid && isRelease && playstore) plain += `PlayStore link:\n${playstore}`;
+            if (!isAndroid && isRelease && appstore)  plain += `AppStore link:\n${appstore}`;
 
-            return { html, plain, appName, version, build, apk, playstore, appstore, features, patches, isAndroid, isRelease };
+            return { html, plain, appName, version, build, rollout, apk, playstore, appstore, features, patches, isAndroid, isRelease };
         }
 
         function rnUpdate() {
@@ -679,6 +725,54 @@
                 document.body.removeChild(ta);
             }
         });
+
+        // ── Live version fetch ────────────────────────────────────────────────
+        let liveVersionTimer = null;
+
+        function fetchLiveVersion(platform, url) {
+            const liveEl = document.getElementById(platform === 'android' ? 'rn-playstore-live' : 'rn-appstore-live');
+            if (!liveEl) return;
+            liveEl.textContent = '';
+            liveEl.classList.add('hidden');
+            clearTimeout(liveVersionTimer);
+            if (!url) return;
+
+            if (platform === 'ios') {
+                const match = url.match(/\/id(\d+)/);
+                if (!match) return;
+                const appId = match[1];
+                liveEl.textContent = 'Fetching live version…';
+                liveEl.classList.remove('hidden');
+                liveVersionTimer = setTimeout(() => {
+                    fetch(`https://itunes.apple.com/lookup?id=${appId}`)
+                        .then(r => r.json())
+                        .then(data => {
+                            const ver = data.results?.[0]?.version;
+                            if (ver) { liveEl.textContent = `Live on AppStore: ${ver}`; }
+                            else { liveEl.classList.add('hidden'); }
+                        })
+                        .catch(() => liveEl.classList.add('hidden'));
+                }, 700);
+            } else {
+                const match = url.match(/[?&]id=([^&]+)/);
+                if (!match) return;
+                const pkgId = match[1];
+                liveEl.textContent = 'Fetching live version…';
+                liveEl.classList.remove('hidden');
+                liveVersionTimer = setTimeout(() => {
+                    const proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://play.google.com/store/apps/details?id=' + pkgId + '&hl=en&gl=US');
+                    fetch(proxyUrl)
+                        .then(r => r.json())
+                        .then(data => {
+                            const html = data.contents || '';
+                            const m = html.match(/"softwareVersion"\s*:\s*"([^"]+)"/);
+                            if (m) { liveEl.textContent = `Live on PlayStore: ${m[1]}`; }
+                            else { liveEl.classList.add('hidden'); }
+                        })
+                        .catch(() => liveEl.classList.add('hidden'));
+                }, 700);
+            }
+        }
 
         // ── Init ──────────────────────────────────────────────────────────────
         setEnv('Dev');
