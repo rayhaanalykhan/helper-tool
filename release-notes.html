@@ -275,20 +275,18 @@
 
         </div>
 
-        <!-- Last Release Date + Tool Release Notes -->
+        <!-- Last Release Date -->
         <div class="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
-            <div class="px-5 py-3.5 flex items-center gap-2.5 border-b border-border">
+            <div class="px-5 py-3.5 flex items-center gap-2.5">
                 <div class="p-1.5 rounded-lg bg-surface shrink-0">
                     <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                 </div>
                 <span class="text-sm font-semibold text-main">Last released: <span id="last-updated" class="font-normal text-muted"></span></span>
             </div>
-            <div id="tool-changelog" class="px-5 py-4 space-y-4"></div>
         </div>
 
     </div>
 
-    <script src="changelog.js"></script>
     <script src="shared.js?v=20260523-3"></script>
     <script>
         // ── Theme ─────────────────────────────────────────────────────────────
@@ -782,9 +780,18 @@
         pc.appendChild(createRnRow(pc, 'Patch...'));
         rnSetPlatform('android');
 
+        function formatDateAmPm(d) {
+            const day = d.getDate();
+            const suffix = [,'st','nd','rd'][((day % 100 - 20) % 10) | 0] || [,'st','nd','rd'][day % 100] || 'th';
+            const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+            let h = d.getHours(), min = String(d.getMinutes()).padStart(2,'0');
+            const ampm = h >= 12 ? 'PM' : 'AM';
+            h = h % 12 || 12;
+            return `${day}${suffix} ${months[d.getMonth()]} ${d.getFullYear()}, ${String(h).padStart(2,'0')}:${min} ${ampm}`;
+        }
+
         const d = new Date(document.lastModified);
-        document.getElementById('last-updated').textContent = d.toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-        renderToolChangelog('tool-changelog');
+        document.getElementById('last-updated').textContent = formatDateAmPm(d);
     </script>
     <!-- Custom Alert Modal -->
     <div id="custom-alert-overlay" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;">
