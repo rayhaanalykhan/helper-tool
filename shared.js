@@ -5,9 +5,9 @@
     // Paste your Firebase project config here.
     // Get it from: Firebase Console → Project Settings → Your apps → SDK setup
     var FIREBASE_CONFIG = {
-        apiKey:            '',
-        authDomain:        '',
-        projectId:         '',
+        apiKey:            'AIzaSyBO6TBjvtZE8_OdSsEH6c2_CKOB_4GMnnk',
+        authDomain:        'helper-tool-tech.firebaseapp.com',
+        projectId:         'helper-tool-tech',
     };
 
     var COLLECTION   = 'feedback';
