@@ -110,8 +110,14 @@
             <div class="flex items-center gap-3 flex-wrap">
                 <a href="index.html" class="text-base font-bold text-main whitespace-nowrap hover:text-primary transition-colors">Helper Tools</a>
                 <div class="flex items-center bg-surface rounded-lg p-0.5 border border-border gap-0.5">
-                    <a href="version-control.html" class="nav-tab-idle px-3 py-1 rounded-md text-sm transition-colors">Version Control</a>
-                    <span class="nav-tab-active px-3 py-1 rounded-md text-sm">Release Notes</span>
+                    <a href="version-control.html" class="nav-tab-idle px-3 py-1 rounded-md text-sm transition-colors flex items-center gap-1.5">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                        Version Control
+                    </a>
+                    <span class="nav-tab-active px-3 py-1 rounded-md text-sm flex items-center gap-1.5">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        Release Notes
+                    </span>
                 </div>
             </div>
             <button id="theme-toggle" class="p-1.5 rounded-md text-muted hover:text-main hover:bg-surface transition-colors" title="Toggle Dark/Light Mode">
@@ -359,6 +365,15 @@
         setupHistoryInput('rn-playstore','dd-playstore', HIST.playstoreUrls);
         setupHistoryInput('rn-appstore', 'dd-appstore',  HIST.appstoreUrls);
 
+        // ── Custom alert modal ────────────────────────────────────────────────
+        function showCustomAlert(message) {
+            document.getElementById('custom-alert-message').textContent = message;
+            document.getElementById('custom-alert-overlay').style.display = 'flex';
+        }
+        function closeCustomAlert() {
+            document.getElementById('custom-alert-overlay').style.display = 'none';
+        }
+
         // ── Custom environment dropdown ────────────────────────────────────────
         const envTrigger  = document.getElementById('env-trigger');
         const envDropdown = document.getElementById('env-dropdown');
@@ -384,7 +399,7 @@
             opt.addEventListener('click', () => {
                 if (rnState.isRelease && opt.dataset.env !== 'Prod') {
                     envDropdown.classList.add('hidden');
-                    alert('Release builds are always Production. Uncheck "Release Build" first to change the environment.');
+                    showCustomAlert('Release builds are always Production. Uncheck "Release Build" first to change the environment.');
                     return;
                 }
                 setEnv(opt.dataset.env);
@@ -413,7 +428,6 @@
             const versionRow = document.getElementById('version-row');
             versionRow.className = isAndroid ? 'grid gap-3' : 'grid grid-cols-2 gap-3';
             document.getElementById('rn-build-wrap').classList.toggle('hidden', isAndroid);
-            document.getElementById('rn-apk-wrap').classList.toggle('hidden', !isAndroid);
             updateStoreUrlVisibility();
             rnUpdate();
         }
@@ -422,6 +436,8 @@
         function updateStoreUrlVisibility() {
             const isAndroid = rnState.platform === 'android';
             const isRelease = rnState.isRelease;
+            // APK is hidden for Android release builds — the live Play Store URL serves this purpose
+            document.getElementById('rn-apk-wrap').classList.toggle('hidden', !isAndroid || isRelease);
             document.getElementById('rn-playstore-wrap').classList.toggle('hidden', !(isAndroid && isRelease));
             document.getElementById('rn-appstore-wrap').classList.toggle('hidden', !(!isAndroid && isRelease));
         }
@@ -547,9 +563,8 @@
                 html += `<strong>Patches:</strong><br>${patches.map(p => `• ${p}`).join('<br>')}<br>`;
                 if ((isAndroid && apk) || (isRelease && (playstore || appstore))) html += '<br>';
             }
-            if (isAndroid && apk) {
+            if (isAndroid && !isRelease && apk) {
                 html += `APK Link:<br>${apk}`;
-                if (isRelease && playstore) html += '<br><br>';
             }
             if (isAndroid && isRelease && playstore) html += `Play Store:<br>${playstore}`;
             if (!isAndroid && isRelease && appstore)  html += `App Store:<br>${appstore}`;
@@ -563,9 +578,8 @@
                 plain += `Patches:\n${patches.map(p => `• ${p}`).join('\n')}\n`;
                 if ((isAndroid && apk) || (isRelease && (playstore || appstore))) plain += '\n';
             }
-            if (isAndroid && apk) {
+            if (isAndroid && !isRelease && apk) {
                 plain += `APK Link:\n${apk}`;
-                if (isRelease && playstore) plain += '\n\n';
             }
             if (isAndroid && isRelease && playstore) plain += `Play Store:\n${playstore}`;
             if (!isAndroid && isRelease && appstore)  plain += `App Store:\n${appstore}`;
@@ -585,16 +599,16 @@
 
             mark('rn-app-name',  !appName);
             mark('rn-version',   !version);
-            if (!isAndroid)              mark('rn-build',     !build);
-            if (isAndroid)               mark('rn-apk',       !apk);
-            if (isAndroid && isRelease)  mark('rn-playstore', !playstore);
-            if (!isAndroid && isRelease) mark('rn-appstore',  !appstore);
+            if (!isAndroid)                   mark('rn-build',     !build);
+            if (isAndroid && !isRelease)      mark('rn-apk',       !apk);
+            if (isAndroid && isRelease)       mark('rn-playstore', !playstore);
+            if (!isAndroid && isRelease)      mark('rn-appstore',  !appstore);
 
-            if (!appName || !version)                  ok = false;
-            if (!isAndroid && !build)                  ok = false;
-            if (isAndroid  && !apk)                    ok = false;
-            if (isAndroid  && isRelease && !playstore) ok = false;
-            if (!isAndroid && isRelease && !appstore)  ok = false;
+            if (!appName || !version)                       ok = false;
+            if (!isAndroid && !build)                       ok = false;
+            if (isAndroid  && !isRelease && !apk)           ok = false;
+            if (isAndroid  && isRelease && !playstore)      ok = false;
+            if (!isAndroid && isRelease && !appstore)       ok = false;
 
             const noItems = features.length === 0 && patches.length === 0;
             document.getElementById('fp-error').classList.toggle('hidden', !noItems);
@@ -607,7 +621,7 @@
         document.getElementById('rn-copy-btn').addEventListener('click', async () => {
             if (!validate()) return;
             const btn = document.getElementById('rn-copy-btn');
-            const { html, plain, appName, version, playstore, appstore, isAndroid, isRelease } = buildOutput();
+            const { html, plain, appName, version, build, features, patches, playstore, appstore, isAndroid, isRelease } = buildOutput();
 
             const showCopied = () => {
                 const orig = btn.textContent;
@@ -625,6 +639,17 @@
             addToHistory(HIST.versions, version);
             if (isAndroid && isRelease) addToHistory(HIST.playstoreUrls, playstore);
             if (!isAndroid && isRelease) addToHistory(HIST.appstoreUrls, appstore);
+
+            const displayVersion = (!isAndroid && build) ? `${version} (${build})` : version;
+            localStorage.setItem('rn_last_release_structured', JSON.stringify({
+                appName,
+                platform: isAndroid ? 'Android' : 'iOS',
+                version: displayVersion,
+                env: currentEnv,
+                features,
+                patches,
+                date: new Date().toISOString()
+            }));
 
             const fullHtml = `<!DOCTYPE html><html><body>${html}</body></html>`;
             try {
@@ -657,5 +682,23 @@
         const d = new Date(document.lastModified);
         document.getElementById('last-updated').textContent = d.toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
     </script>
+    <!-- Custom Alert Modal -->
+    <div id="custom-alert-overlay" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;">
+        <div id="custom-alert-backdrop" onclick="closeCustomAlert()" style="position:absolute;inset:0;background:rgba(0,0,0,0.45);backdrop-filter:blur(3px);cursor:default;"></div>
+        <div style="position:relative;background:var(--bg-card);border:1px solid var(--border-color);border-radius:0.75rem;box-shadow:0 20px 60px rgba(0,0,0,0.3);padding:1.5rem;max-width:22rem;width:calc(100% - 2rem);">
+            <div style="display:flex;align-items:flex-start;gap:0.75rem;">
+                <div style="padding:0.5rem;border-radius:0.5rem;background:rgba(245,158,11,0.12);flex-shrink:0;">
+                    <svg style="width:1.25rem;height:1.25rem;color:#f59e0b;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                </div>
+                <div style="flex:1;">
+                    <p style="font-weight:700;font-size:0.875rem;color:var(--text-main);margin:0;">Environment Mismatch</p>
+                    <p id="custom-alert-message" style="font-size:0.8125rem;color:var(--text-muted);margin:0.375rem 0 0;line-height:1.5;"></p>
+                </div>
+            </div>
+            <div style="margin-top:1.25rem;display:flex;justify-content:flex-end;">
+                <button onclick="closeCustomAlert()" style="font-size:0.8125rem;background:var(--primary);color:#fff;padding:0.4rem 1.25rem;border-radius:0.375rem;border:none;cursor:pointer;font-weight:600;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">Got it</button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
