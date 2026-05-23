@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    var APP_VERSION = '20260524-1';
+    var APP_VERSION = '20260524-2';
 
     var FIREBASE_CONFIG = {
         apiKey:     'AIzaSyBO6TBjvtZE8_OdSsEH6c2_CKOB_4GMnnk',
@@ -144,6 +144,25 @@
         _sidebarActive = false;
     }
 
+    function _showLoginButton() {
+        if (document.getElementById('ht-login-btn')) return;
+        var toggle = document.getElementById('theme-toggle');
+        if (!toggle) return;
+        var a = document.createElement('a');
+        a.id   = 'ht-login-btn';
+        a.href = 'login.html';
+        a.textContent = 'Sign in';
+        a.style.cssText = 'font-size:0.8125rem;font-weight:600;color:var(--primary);background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.25);border-radius:0.375rem;padding:0.3rem 0.75rem;text-decoration:none;white-space:nowrap;transition:background 0.15s;';
+        a.onmouseover = function () { this.style.background = 'rgba(59,130,246,0.15)'; };
+        a.onmouseout  = function () { this.style.background = 'rgba(59,130,246,0.08)'; };
+        toggle.parentNode.insertBefore(a, toggle);
+    }
+
+    function _hideLoginButton() {
+        var btn = document.getElementById('ht-login-btn');
+        if (btn) btn.remove();
+    }
+
     // ── Disabled account overlay ──────────────────────────────────────────────
     function _showDisabled() {
         var el = document.createElement('div');
@@ -161,6 +180,7 @@
                 window.htAuth = { user: null, role: null, permissions: {}, prefs: {} };
                 if (resolved) _hideSidebar();
                 resolved = true;
+                _showLoginButton();
                 if (typeof window.htOnAuthReady === 'function') window.htOnAuthReady(window.htAuth);
                 return;
             }
@@ -196,10 +216,12 @@
                     fbDb.collection('settings').doc('app').get()
                         .then(function (appSnap) {
                             var wm = appSnap.exists ? (appSnap.data().welcomeMessage || '') : '';
+                            _hideLoginButton();
                             _showSidebar({ name: data.name, email: user.email, role: data.role, welcomeMessage: wm });
                             if (typeof window.htOnAuthReady === 'function') window.htOnAuthReady(window.htAuth);
                         })
                         .catch(function () {
+                            _hideLoginButton();
                             _showSidebar({ name: data.name, email: user.email, role: data.role, welcomeMessage: '' });
                             if (typeof window.htOnAuthReady === 'function') window.htOnAuthReady(window.htAuth);
                         });
