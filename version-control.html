@@ -8,130 +8,59 @@
     <script>
         tailwind.config = {
             darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        main: 'var(--bg-main)',
-                        card: 'var(--bg-card)',
-                        surface: 'var(--bg-surface)',
-                        primary: 'var(--primary)',
-                        muted: 'var(--text-muted)',
-                        border: 'var(--border-color)',
-                        focus: 'var(--border-focus)',
-                    },
-                    textColor: { main: 'var(--text-main)' }
-                }
-            }
+            theme: { extend: { colors: { main: 'var(--bg-main)', card: 'var(--bg-card)', surface: 'var(--bg-surface)', primary: 'var(--primary)', muted: 'var(--text-muted)', border: 'var(--border-color)', focus: 'var(--border-focus)' }, textColor: { main: 'var(--text-main)' } } }
         }
     </script>
     <style>
-        :root {
-            --bg-main: #f9fafb;
-            --bg-card: #ffffff;
-            --bg-surface: #f3f4f6;
-            --text-main: #111827;
-            --text-muted: #6b7280;
-            --border-color: #e5e7eb;
-            --border-focus: #3b82f6;
-            --primary: #3b82f6;
-        }
-        html.dark {
-            --bg-main: #0f172a;
-            --bg-card: #1e293b;
-            --bg-surface: #334155;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --border-color: #475569;
-            --border-focus: #60a5fa;
-            --primary: #3b82f6;
-        }
-        body {
-            background-color: var(--bg-main);
-            color: var(--text-main);
-            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            transition: background-color 0.2s, color 0.2s;
-        }
-        .input-base {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            transition: all 0.2s;
-        }
-        .input-base:focus {
-            outline: none;
-            border-color: var(--border-focus);
-            box-shadow: 0 0 0 1px var(--border-focus);
-        }
-        .mono-output {
-            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-            background-color: var(--bg-surface);
-            border: 1px solid var(--border-color);
-            border-radius: 0.375rem;
-            padding: 0.75rem;
-            font-size: 0.875rem;
-            word-break: break-all;
-        }
-        .peer:hover ~ .info-tooltip,
-        .info-tooltip:hover {
-            display: flex;
-        }
-        .copy-btn:disabled {
-            opacity: 0.35;
-            cursor: not-allowed;
-        }
-        .nav-tab-active {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            font-weight: 600;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-        }
-        .nav-tab-idle {
-            color: var(--text-muted);
-        }
-        .nav-tab-idle:hover {
-            color: var(--text-main);
-        }
+        :root { --bg-main:#f9fafb;--bg-card:#ffffff;--bg-surface:#f3f4f6;--text-main:#111827;--text-muted:#6b7280;--border-color:#e5e7eb;--border-focus:#3b82f6;--primary:#3b82f6; }
+        html.dark { --bg-main:#0f172a;--bg-card:#1e293b;--bg-surface:#334155;--text-main:#f8fafc;--text-muted:#94a3b8;--border-color:#475569;--border-focus:#60a5fa;--primary:#3b82f6; }
+        body { background:var(--bg-main);color:var(--text-main);font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;transition:background-color 0.2s,color 0.2s; }
+        .input-base { background:var(--bg-card);border:1px solid var(--border-color);color:var(--text-main);transition:all 0.2s; }
+        .input-base:focus { outline:none;border-color:var(--border-focus);box-shadow:0 0 0 1px var(--border-focus); }
+        .mono-output { font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:0.375rem;padding:0.75rem;font-size:0.875rem;word-break:break-all; }
+        .peer:hover ~ .info-tooltip, .info-tooltip:hover { display:flex; }
+        .copy-btn:disabled { opacity:0.35;cursor:not-allowed; }
+        .nav-tab-active { background:var(--bg-card);border:1px solid var(--border-color);color:var(--text-main);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,0.05); }
+        .nav-tab-idle { color:var(--text-muted); }
+        .nav-tab-idle:hover { color:var(--text-main); }
     </style>
 </head>
 <body class="min-h-screen p-4 md:p-8">
 
     <div class="max-w-6xl mx-auto space-y-6">
 
-        <header class="flex justify-between items-center bg-card p-4 rounded-xl border border-border shadow-sm">
+        <header class="flex justify-between items-center bg-card rounded-xl border border-border shadow-sm" style="height:3.5rem;padding:0 1rem;">
             <div class="flex items-center gap-3 flex-wrap">
                 <a href="index.html" class="text-base font-bold text-main whitespace-nowrap hover:text-primary transition-colors">Helper Tools</a>
                 <div class="flex items-center bg-surface rounded-lg p-0.5 border border-border gap-0.5">
                     <span class="nav-tab-active px-3 py-1 rounded-md text-sm flex items-center gap-1.5">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
                         Version Control
                     </span>
                     <a href="release-notes.html" class="nav-tab-idle px-3 py-1 rounded-md text-sm transition-colors flex items-center gap-1.5">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                         Release Notes
                     </a>
                 </div>
             </div>
             <div class="flex items-center gap-2">
-                <button id="theme-toggle" class="p-1.5 rounded-md text-muted hover:text-main hover:bg-surface transition-colors" title="Toggle Dark/Light Mode">
-                    <svg id="icon-sun" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                    <svg id="icon-moon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                <button id="theme-toggle" class="p-1.5 rounded-md text-muted hover:text-main hover:bg-surface transition-colors" title="Toggle theme">
+                    <svg id="icon-sun" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                    <svg id="icon-moon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
                 </button>
             </div>
         </header>
 
         <main class="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
-            <!-- LEFT COLUMN: Inputs -->
+            <!-- LEFT: Inputs -->
             <div class="space-y-8 bg-card p-6 rounded-xl border border-border shadow-sm">
 
-                <!-- 1. Change Type -->
                 <div class="space-y-3">
                     <label class="block text-sm font-bold uppercase tracking-wider text-muted">1. Change Type</label>
                     <div id="type-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
                 </div>
 
-                <!-- 2. Tickets -->
                 <div class="space-y-3">
                     <div class="flex justify-between items-end">
                         <label class="block text-sm font-bold uppercase tracking-wider text-muted">2. Tickets</label>
@@ -146,7 +75,6 @@
                     </div>
                 </div>
 
-                <!-- 3. Description -->
                 <div class="space-y-3">
                     <div class="flex justify-between items-end">
                         <label class="block text-sm font-bold uppercase tracking-wider text-muted">3. Description</label>
@@ -159,7 +87,7 @@
                 </div>
             </div>
 
-            <!-- RIGHT COLUMN: Outputs -->
+            <!-- RIGHT: Outputs -->
             <div class="space-y-6 lg:sticky lg:top-8 self-start">
 
                 <div class="bg-card p-5 rounded-xl border border-border shadow-sm">
@@ -177,7 +105,7 @@
                     </div>
                     <div id="out-commit" class="mono-output min-h-[3rem] flex items-center whitespace-pre-wrap"></div>
                     <div id="commit-multi-ticket-note" class="text-xs text-muted mt-3 hidden bg-surface p-2.5 rounded border border-border flex items-start gap-2">
-                        <svg class="w-4 h-4 text-primary shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <svg class="w-4 h-4 text-primary shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                         <span>Note: You will need to commit for each ticket individually. The message above only mentions the first ticket.</span>
                     </div>
                 </div>
@@ -200,7 +128,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-    <script src="shared.js?v=20260523-4"></script>
+    <script src="shared.js?v=20260524-1"></script>
     <script>
         const changeTypes = [
             { id: 'feat',     title: 'feat',     sub: 'new feature' },
@@ -222,7 +150,48 @@
             test:     ["Add Unit Tests for Payment Service", "Refactor Auth Integration Tests", "Add Missing Edge Case Tests"]
         };
 
-        const elThemeToggle = document.getElementById('theme-toggle');
+        // Theme
+        (() => {
+            const saved = localStorage.getItem('ostrom_theme');
+            const sys   = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (saved === 'dark' || (!saved && sys)) {
+                document.documentElement.classList.add('dark');
+                document.getElementById('icon-sun').classList.remove('hidden');
+                document.getElementById('icon-moon').classList.add('hidden');
+            }
+        })();
+        document.getElementById('theme-toggle').addEventListener('click', () => {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('ostrom_theme', isDark ? 'dark' : 'light');
+            document.getElementById('icon-sun').classList.toggle('hidden', !isDark);
+            document.getElementById('icon-moon').classList.toggle('hidden', isDark);
+            const sbSun  = document.getElementById('ht-sb-sun');
+            const sbMoon = document.getElementById('ht-sb-moon');
+            const sbLbl  = document.getElementById('ht-sb-theme-lbl');
+            if (sbSun)  sbSun.style.display  = isDark ? 'block' : 'none';
+            if (sbMoon) sbMoon.style.display  = isDark ? 'none'  : 'block';
+            if (sbLbl)  sbLbl.textContent     = isDark ? 'Dark'  : 'Light';
+        });
+
+        // State — loaded from localStorage first, then overridden by server prefs after auth
+        const state = { username: '', ticketPrefix: 'SPRK-', type: '', noTicket: false, isRelease: false };
+
+        function initSettings() {
+            state.username     = localStorage.getItem('ostrom_user')   || '';
+            state.ticketPrefix = localStorage.getItem('ostrom_prefix') || 'SPRK-';
+        }
+
+        // Auth callback: override with server prefs if logged in
+        window.htOnAuthReady = function (auth) {
+            if (!auth.user) return;
+            const serverUser   = auth.prefs && auth.prefs['ostrom_user'];
+            const serverPrefix = auth.prefs && auth.prefs['ostrom_prefix'];
+            if (serverUser   !== undefined) { state.username     = serverUser; localStorage.setItem('ostrom_user',   serverUser); }
+            if (serverPrefix !== undefined) { state.ticketPrefix = serverPrefix || 'SPRK-'; localStorage.setItem('ostrom_prefix', state.ticketPrefix); }
+            document.querySelectorAll('.ticket-prefix-display').forEach(el => { el.textContent = state.ticketPrefix; });
+            triggerUpdate();
+        };
+
         const elTypeGrid    = document.getElementById('type-grid');
         const elTicketRows  = document.getElementById('ticket-rows');
         const elAddTicket   = document.getElementById('add-ticket-btn');
@@ -234,36 +203,6 @@
         const commitNote    = document.getElementById('commit-multi-ticket-note');
         const outPr         = document.getElementById('out-pr');
 
-        // Theme
-        const toggleTheme = () => {
-            const isDark = document.documentElement.classList.toggle('dark');
-            localStorage.setItem('ostrom_theme', isDark ? 'dark' : 'light');
-            document.getElementById('icon-sun').classList.toggle('hidden', !isDark);
-            document.getElementById('icon-moon').classList.toggle('hidden', isDark);
-        };
-        (() => {
-            const saved = localStorage.getItem('ostrom_theme');
-            const sys   = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            if (saved === 'dark' || (!saved && sys)) {
-                document.documentElement.classList.add('dark');
-                document.getElementById('icon-sun').classList.remove('hidden');
-                document.getElementById('icon-moon').classList.add('hidden');
-            }
-        })();
-        elThemeToggle.addEventListener('click', toggleTheme);
-
-        // State
-        const state = { username: '', ticketPrefix: 'SPRK-', type: '', noTicket: false, isRelease: false };
-
-        // Load settings from localStorage (configured in Settings page)
-        const initSettings = () => {
-            const savedUser   = localStorage.getItem('ostrom_user');
-            const savedPrefix = localStorage.getItem('ostrom_prefix');
-            state.username    = savedUser || '';
-            state.ticketPrefix = savedPrefix || 'SPRK-';
-        };
-
-        // Type grid — examples are read-only (not clickable)
         const renderTypes = () => {
             elTypeGrid.innerHTML = '';
             changeTypes.forEach(t => {
@@ -271,14 +210,13 @@
                 wrapper.className = 'relative flex flex-col h-full';
 
                 const btn = document.createElement('button');
-                btn.className = `w-full text-left p-3 rounded-lg border transition-all h-full
-                    ${state.type === t.id ? 'border-focus ring-1 ring-focus bg-surface' : 'border-border bg-card hover:border-focus'}`;
+                btn.className = `w-full text-left p-3 rounded-lg border transition-all h-full ${state.type === t.id ? 'border-focus ring-1 ring-focus bg-surface' : 'border-border bg-card hover:border-focus'}`;
                 btn.innerHTML = `<div class="font-bold text-main">${t.title}</div><div class="text-xs text-muted mt-0.5">${t.sub}</div>`;
                 btn.onclick = () => { state.type = t.id; renderTypes(); triggerUpdate(); };
 
                 const infoIcon = document.createElement('div');
                 infoIcon.className = 'absolute top-2 right-2 text-muted hover:text-primary cursor-help z-10 peer p-1';
-                infoIcon.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
+                infoIcon.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`;
                 infoIcon.addEventListener('click', e => e.stopPropagation());
 
                 const tooltip = document.createElement('div');
@@ -288,10 +226,8 @@
 
                 const examplesContainer = document.createElement('div');
                 examplesContainer.className = 'flex flex-wrap gap-1.5';
-
                 typeExamples[t.id].forEach(ex => {
                     const tag = document.createElement('span');
-                    // Read-only — no onclick, no hover effect, cursor-default
                     tag.className = 'text-xs bg-surface text-muted py-1 px-2 rounded border border-border font-mono select-text cursor-default';
                     tag.innerText = ex;
                     examplesContainer.appendChild(tag);
@@ -305,7 +241,6 @@
             });
         };
 
-        // Ticket rows
         const createTicketRow = () => {
             const row = document.createElement('div');
             row.className = 'flex gap-2 ticket-row';
@@ -315,7 +250,7 @@
                     <input type="text" class="w-full bg-transparent outline-none px-3 py-2 uppercase font-mono text-sm" placeholder="123">
                 </div>
                 <button class="remove-ticket-btn p-2 text-muted hover:text-[#ef4444] transition-colors rounded-md hover:bg-[#ef4444]/10 hidden" title="Remove ticket">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>`;
             row.querySelector('input').addEventListener('input', triggerUpdate);
             row.querySelector('.remove-ticket-btn').addEventListener('click', () => { row.remove(); updateRemoveButtons(); triggerUpdate(); });
@@ -328,39 +263,37 @@
         };
 
         elAddTicket.addEventListener('click', () => { elTicketRows.appendChild(createTicketRow()); updateRemoveButtons(); triggerUpdate(); });
-        elNoTicket.addEventListener('change', (e) => { state.noTicket = e.target.checked; document.getElementById('ticket-section').style.display = state.noTicket ? 'none' : 'flex'; triggerUpdate(); });
-        elMarkRelease.addEventListener('change', (e) => { state.isRelease = e.target.checked; triggerUpdate(); });
+        elNoTicket.addEventListener('change', e => { state.noTicket = e.target.checked; document.getElementById('ticket-section').style.display = state.noTicket ? 'none' : 'flex'; triggerUpdate(); });
+        elMarkRelease.addEventListener('change', e => { state.isRelease = e.target.checked; triggerUpdate(); });
         elDesc.addEventListener('input', triggerUpdate);
 
-        const slugify        = (text) => text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
-        const capitalizeFirst = (str)  => str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
+        const slugify         = text => text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+        const capitalizeFirst = str  => str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
 
-        // Validation
         function isVCValid() {
             if (!state.type) return false;
             if (!elDesc.value.trim()) return false;
             if (!state.noTicket) {
-                const ticketInputs = elTicketRows.querySelectorAll('input[type="text"]');
-                if (![...ticketInputs].some(i => i.value.trim())) return false;
+                const inputs = elTicketRows.querySelectorAll('input[type="text"]');
+                if (![...inputs].some(i => i.value.trim())) return false;
             }
             return true;
         }
 
         function triggerUpdate() {
-            // Auto-capitalize description
             const oldDesc = elDesc.value;
             const newDesc = capitalizeFirst(oldDesc);
             if (oldDesc !== newDesc) {
-                const isFocused = document.activeElement === elDesc;
+                const focused = document.activeElement === elDesc;
                 const s = elDesc.selectionStart, e = elDesc.selectionEnd;
                 elDesc.value = newDesc;
-                if (isFocused) elDesc.setSelectionRange(s, e);
+                if (focused) elDesc.setSelectionRange(s, e);
             }
 
-            const type      = state.type || '{type}';
-            const user      = state.username || '{user}';
-            const descRaw   = elDesc.value.trim();
-            const descSlug  = slugify(descRaw) || '{short-description}';
+            const type     = state.type || '{type}';
+            const user     = state.username || '{user}';
+            const descRaw  = elDesc.value.trim();
+            const descSlug = slugify(descRaw) || '{short-description}';
 
             const inputs = elTicketRows.querySelectorAll('input[type="text"]');
             const validTickets = [];
@@ -393,12 +326,10 @@
             if (state.isRelease) pr += ' (release)';
             outPr.innerText = pr;
 
-            // Enable/disable copy buttons based on form completeness
             const valid = isVCValid();
             document.querySelectorAll('.copy-btn').forEach(btn => { btn.disabled = !valid; });
         }
 
-        // Copy
         document.querySelectorAll('.copy-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 if (btn.disabled) return;
@@ -410,7 +341,7 @@
                     btn.classList.replace('hover:bg-blue-600', 'hover:bg-emerald-600');
                     setTimeout(() => { btn.innerText = orig; btn.classList.replace('bg-emerald-500', 'bg-primary'); btn.classList.replace('hover:bg-emerald-600', 'hover:bg-blue-600'); }, 1800);
                 };
-                const fallbackCopy = () => {
+                const fallback = () => {
                     const ta = document.createElement('textarea');
                     ta.value = text; ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0';
                     document.body.appendChild(ta); ta.select();
@@ -418,8 +349,8 @@
                     document.body.removeChild(ta);
                 };
                 if (navigator.clipboard && window.isSecureContext) {
-                    navigator.clipboard.writeText(text).then(showCopied).catch(fallbackCopy);
-                } else { fallbackCopy(); }
+                    navigator.clipboard.writeText(text).then(showCopied).catch(fallback);
+                } else { fallback(); }
             });
         });
 
@@ -438,9 +369,7 @@
             h = h % 12 || 12;
             return `${day}${suffix} ${months[d.getMonth()]} ${d.getFullYear()}, ${String(h).padStart(2,'0')}:${min} ${ampm}`;
         }
-
-        const d = new Date(document.lastModified);
-        document.getElementById('last-updated').textContent = formatDateAmPm(d);
+        document.getElementById('last-updated').textContent = formatDateAmPm(new Date(document.lastModified));
     </script>
 </body>
 </html>

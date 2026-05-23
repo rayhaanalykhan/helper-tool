@@ -24,3 +24,9 @@ desktop.ini
 
 # Dependencies (if ever added)
 node_modules/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.python-version
