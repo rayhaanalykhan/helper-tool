@@ -18,13 +18,12 @@
         .input-base { background:var(--bg-card);border:1px solid var(--border-color);color:var(--text-main);transition:border-color 0.2s,box-shadow 0.2s; }
         .input-base:focus { outline:none;border-color:var(--border-focus);box-shadow:0 0 0 1px var(--border-focus); }
         .section-label { display:block;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:0.375rem; }
-        .sidebar-item { display:flex;align-items:center;gap:0.625rem;padding:0.5rem 0.875rem;border-radius:0.5rem;font-size:0.875rem;font-weight:500;cursor:pointer;transition:background 0.15s,color 0.15s;color:var(--text-muted);border:none;background:none;width:100%;text-align:left;text-decoration:none; }
-        .sidebar-item:hover { background:var(--bg-surface);color:var(--text-main); }
-        .sidebar-item.active { background:rgba(59,130,246,0.1);color:var(--primary);font-weight:600; }
         .toggle-track { width:2.25rem;height:1.25rem;border-radius:9999px;background:var(--border-color);position:relative;cursor:pointer;transition:background 0.2s;flex-shrink:0; }
         .toggle-track.on { background:var(--primary); }
         .toggle-thumb { width:1rem;height:1rem;border-radius:50%;background:#fff;position:absolute;top:0.125rem;left:0.125rem;transition:transform 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.2); }
         .toggle-track.on .toggle-thumb { transform:translateX(1rem); }
+        .jump-link { font-size:0.8rem;padding:0.3rem 0.75rem;border-radius:0.375rem;border:1px solid var(--border-color);background:transparent;color:var(--text-muted);cursor:pointer;transition:color 0.15s,border-color 0.15s,background 0.15s;text-decoration:none; }
+        .jump-link:hover { color:var(--primary);border-color:rgba(59,130,246,0.4);background:rgba(59,130,246,0.05); }
         @keyframes spin { to { transform:rotate(360deg); } }
     </style>
 </head>
@@ -35,25 +34,12 @@
         <div style="width:2rem;height:2rem;border:3px solid var(--border-color);border-top-color:var(--primary);border-radius:50%;animation:spin 0.7s linear infinite;"></div>
     </div>
 
-    <!-- Main layout -->
-    <div id="page-content" class="hidden min-h-screen flex flex-col">
+    <div id="page-content" class="hidden">
 
         <!-- Top nav -->
         <header class="bg-card border-b border-border sticky top-0 z-20 shadow-sm" style="height:3.5rem;">
             <div class="h-full px-4 md:px-6 flex justify-between items-center">
-                <div class="flex items-center gap-3 flex-wrap">
-                    <a href="index.html" class="text-base font-bold text-main whitespace-nowrap hover:text-primary transition-colors">Helper Tools</a>
-                    <div class="flex items-center bg-surface rounded-lg p-0.5 border border-border gap-0.5">
-                        <a href="version-control.html" class="px-3 py-1 rounded-md text-sm transition-colors flex items-center gap-1.5" style="color:var(--text-muted);" onmouseover="this.style.color='var(--text-main)'" onmouseout="this.style.color='var(--text-muted)'">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
-                            Version Control
-                        </a>
-                        <a href="release-notes.html" class="px-3 py-1 rounded-md text-sm transition-colors flex items-center gap-1.5" style="color:var(--text-muted);" onmouseover="this.style.color='var(--text-main)'" onmouseout="this.style.color='var(--text-muted)'">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                            Release Notes
-                        </a>
-                    </div>
-                </div>
+                <a href="index.html" class="text-base font-bold text-main whitespace-nowrap hover:text-primary transition-colors">Helper Tools</a>
                 <button id="theme-toggle" class="p-1.5 rounded-md hover:bg-surface transition-colors" style="color:var(--text-muted);" title="Toggle theme">
                     <svg id="icon-sun" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
                     <svg id="icon-moon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
@@ -61,197 +47,184 @@
             </div>
         </header>
 
-        <!-- Body: inner sidebar + content -->
-        <div class="flex flex-1">
+        <main class="p-6 md:p-8" style="max-width:44rem;margin:0 auto;">
 
-            <aside class="w-56 shrink-0 border-r border-border bg-card p-3 space-y-1 sticky top-14 self-start h-[calc(100vh-3.5rem)] overflow-y-auto">
-                <p class="section-label px-2 pt-1 pb-0.5">Menu</p>
-                <button id="nav-users" class="sidebar-item hidden" onclick="switchTab('users')">
-                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-                    Users
-                </button>
-                <button id="nav-integrations" class="sidebar-item hidden" onclick="switchTab('integrations')">
-                    <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4C2.9 2 2 2.9 2 4v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>
-                    Integrations
-                </button>
-                <button id="nav-settings" class="sidebar-item" onclick="switchTab('settings')">
-                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
-                    Settings
-                </button>
-            </aside>
-
-            <main class="flex-1 p-6 md:p-8 max-w-2xl">
-
-                <!-- ── Users tab ─────────────────────────────────────── -->
-                <div id="tab-users" class="hidden space-y-6">
-                    <div>
-                        <h1 class="text-xl font-bold text-main">Users</h1>
-                        <p class="text-sm mt-1" style="color:var(--text-muted);">Manage members, assign permissions, and control access.</p>
+            <!-- ── Users tab ─────────────────────────────────────── -->
+            <div id="tab-users" class="hidden space-y-6">
+                <div>
+                    <h1 class="text-xl font-bold text-main">Users</h1>
+                    <p class="text-sm mt-1" style="color:var(--text-muted);">Manage members, assign permissions, and control access.</p>
+                </div>
+                <div class="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
+                    <div class="px-5 py-4 border-b border-border flex items-center justify-between">
+                        <span class="text-sm font-semibold text-main">All Users</span>
+                        <button id="add-user-btn" class="text-sm bg-primary hover:bg-blue-600 text-white px-3 py-1.5 rounded-lg font-medium transition-colors flex items-center gap-1.5">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                            Add User
+                        </button>
                     </div>
-                    <div class="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
-                        <div class="px-5 py-4 border-b border-border flex items-center justify-between">
-                            <span class="text-sm font-semibold text-main">All Users</span>
-                            <button id="add-user-btn" class="text-sm bg-primary hover:bg-blue-600 text-white px-3 py-1.5 rounded-lg font-medium transition-colors flex items-center gap-1.5">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                                Add User
-                            </button>
+                    <div id="panel-msg" class="hidden px-5 py-3 text-sm border-b border-border"></div>
+                    <div id="user-list" class="divide-y" style="border-color:var(--border-color);">
+                        <div class="px-5 py-8 text-center text-sm" style="color:var(--text-muted);">Loading…</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── Integrations tab ────────────────────────────────── -->
+            <div id="tab-integrations" class="hidden space-y-6">
+                <div>
+                    <h1 class="text-xl font-bold text-main">Integrations</h1>
+                    <p class="text-sm mt-1" style="color:var(--text-muted);">Manage webhooks and app branding.</p>
+                </div>
+
+                <!-- Branding -->
+                <div class="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
+                    <div class="px-5 py-4 border-b border-border">
+                        <h2 class="text-sm font-semibold text-main">Branding</h2>
+                        <p class="text-xs mt-0.5" style="color:var(--text-muted);">Shown to all users as "Welcome to [value] helper tool".</p>
+                    </div>
+                    <div class="px-5 py-5">
+                        <div class="flex gap-2 items-end">
+                            <div class="flex-1">
+                                <label class="section-label" for="welcome-msg-input">Helper tool identifier</label>
+                                <input id="welcome-msg-input" type="text" class="input-base w-full rounded-md px-3 py-2 text-sm" placeholder="e.g. Spark Energy" autocomplete="off">
+                            </div>
+                            <button onclick="saveWelcomeMessage()" class="bg-primary hover:bg-blue-600 text-white rounded-md px-4 py-2 text-sm font-medium transition-colors whitespace-nowrap">Save</button>
                         </div>
-                        <div id="panel-msg" class="hidden px-5 py-3 text-sm border-b border-border"></div>
-                        <div id="user-list" class="divide-y" style="border-color:var(--border-color);">
-                            <div class="px-5 py-8 text-center text-sm" style="color:var(--text-muted);">Loading…</div>
+                        <p id="welcome-msg-status" class="hidden text-xs mt-2" style="color:#10b981;"></p>
+                    </div>
+                </div>
+
+                <!-- Google Chat -->
+                <div class="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
+                    <div class="px-5 py-4 border-b border-border">
+                        <h2 class="text-sm font-semibold text-main">Google Chat Spaces</h2>
+                        <p class="text-xs mt-0.5" style="color:var(--text-muted);">Users with Google Chat permission will see these in Release Notes.</p>
+                    </div>
+                    <div id="int-gchat-msg" class="hidden px-5 py-3 text-sm border-b border-border"></div>
+                    <div id="gchat-list" class="px-5 py-3 space-y-2">
+                        <div class="py-4 text-center text-sm" style="color:var(--text-muted);">Loading…</div>
+                    </div>
+                    <div class="px-5 py-4 border-t border-border">
+                        <p class="text-xs font-semibold text-main mb-3">Add New Space</p>
+                        <div class="grid gap-2" style="grid-template-columns:1fr 2fr auto;">
+                            <input id="gchat-new-label" type="text" class="input-base rounded-md px-2.5 py-2 text-sm" placeholder="Label">
+                            <input id="gchat-new-url" type="url" class="input-base rounded-md px-2.5 py-2 text-sm" placeholder="https://chat.googleapis.com/…">
+                            <button type="button" onclick="addWebhook('gchat')" class="bg-primary hover:bg-blue-600 text-white rounded-md px-3 py-2 text-sm font-medium transition-colors whitespace-nowrap">Add</button>
+                        </div>
+                        <p id="gchat-add-error" class="hidden text-xs text-red-400 mt-1.5"></p>
+                    </div>
+                </div>
+
+                <!-- Slack -->
+                <div class="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
+                    <div class="px-5 py-4 border-b border-border">
+                        <h2 class="text-sm font-semibold text-main">Slack Webhooks</h2>
+                        <p class="text-xs mt-0.5" style="color:var(--text-muted);">Users with Slack permission will see these in Release Notes.</p>
+                    </div>
+                    <div id="int-slack-msg" class="hidden px-5 py-3 text-sm border-b border-border"></div>
+                    <div id="slack-list" class="px-5 py-3 space-y-2">
+                        <div class="py-4 text-center text-sm" style="color:var(--text-muted);">Loading…</div>
+                    </div>
+                    <div class="px-5 py-4 border-t border-border">
+                        <p class="text-xs font-semibold text-main mb-3">Add New Webhook</p>
+                        <div class="grid gap-2" style="grid-template-columns:1fr 2fr auto;">
+                            <input id="slack-new-label" type="text" class="input-base rounded-md px-2.5 py-2 text-sm" placeholder="Label">
+                            <input id="slack-new-url" type="url" class="input-base rounded-md px-2.5 py-2 text-sm" placeholder="https://hooks.slack.com/…">
+                            <button type="button" onclick="addWebhook('slack')" class="bg-primary hover:bg-blue-600 text-white rounded-md px-3 py-2 text-sm font-medium transition-colors whitespace-nowrap">Add</button>
+                        </div>
+                        <p id="slack-add-error" class="hidden text-xs text-red-400 mt-1.5"></p>
+                    </div>
+                </div>
+
+                <!-- Teams -->
+                <div class="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
+                    <div class="px-5 py-4 border-b border-border">
+                        <h2 class="text-sm font-semibold text-main">Microsoft Teams Webhooks</h2>
+                        <p class="text-xs mt-0.5" style="color:var(--text-muted);">Users with Teams permission will see these in Release Notes.</p>
+                    </div>
+                    <div id="int-teams-msg" class="hidden px-5 py-3 text-sm border-b border-border"></div>
+                    <div id="teams-list" class="px-5 py-3 space-y-2">
+                        <div class="py-4 text-center text-sm" style="color:var(--text-muted);">Loading…</div>
+                    </div>
+                    <div class="px-5 py-4 border-t border-border">
+                        <p class="text-xs font-semibold text-main mb-3">Add New Webhook</p>
+                        <div class="grid gap-2" style="grid-template-columns:1fr 2fr auto;">
+                            <input id="teams-new-label" type="text" class="input-base rounded-md px-2.5 py-2 text-sm" placeholder="Label">
+                            <input id="teams-new-url" type="url" class="input-base rounded-md px-2.5 py-2 text-sm" placeholder="https://…webhook.office.com/…">
+                            <button type="button" onclick="addWebhook('teams')" class="bg-primary hover:bg-blue-600 text-white rounded-md px-3 py-2 text-sm font-medium transition-colors whitespace-nowrap">Add</button>
+                        </div>
+                        <p id="teams-add-error" class="hidden text-xs text-red-400 mt-1.5"></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── Settings tab ──────────────────────────────────── -->
+            <div id="tab-settings" class="hidden space-y-6">
+                <div>
+                    <h1 class="text-xl font-bold text-main">Settings</h1>
+                    <p class="text-sm mt-1" style="color:var(--text-muted);">Your personal preferences for Helper Tools.</p>
+                </div>
+
+                <!-- Jump navigation -->
+                <div class="flex items-center gap-2 flex-wrap">
+                    <span class="text-xs font-semibold" style="color:var(--text-muted);">Jump to:</span>
+                    <a href="#vc-section" class="jump-link">Version Control</a>
+                    <a href="#security-section" class="jump-link">Security</a>
+                </div>
+
+                <!-- Version Control Defaults -->
+                <div id="vc-section" class="bg-card rounded-xl border border-border shadow-sm overflow-hidden" style="scroll-margin-top:5rem;">
+                    <div class="px-5 py-4 border-b border-border">
+                        <h2 class="text-sm font-semibold text-main">Version Control Defaults</h2>
+                        <p class="text-xs mt-0.5" style="color:var(--text-muted);">Used to generate branch names and commit messages. Saved to your account.</p>
+                    </div>
+                    <div class="px-5 py-5 space-y-4">
+                        <div>
+                            <label class="section-label" for="vc-username">Username</label>
+                            <input id="vc-username" type="text" class="input-base w-full rounded-md px-3 py-2 text-sm" placeholder="e.g. rehan" autocomplete="off">
+                            <p class="text-xs mt-1.5" style="color:var(--text-muted);">Used in branch names: <span class="font-mono">username/feat/description</span></p>
+                        </div>
+                        <div>
+                            <label class="section-label" for="vc-prefix">Ticket Prefix</label>
+                            <input id="vc-prefix" type="text" class="input-base w-full rounded-md px-3 py-2 text-sm uppercase" placeholder="e.g. SPRK-" autocomplete="off">
+                            <p class="text-xs mt-1.5" style="color:var(--text-muted);">Prefixed to ticket numbers: <span class="font-mono">SPRK-1234</span></p>
+                        </div>
+                        <div class="flex items-center gap-3 pt-1">
+                            <button id="vc-save-btn" onclick="saveVcSettings()" class="text-sm bg-primary hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium transition-colors">Save</button>
+                            <button id="vc-reset-btn" onclick="resetVcSettings()" class="text-sm px-4 py-2 rounded-lg font-medium transition-colors border border-border" style="color:var(--text-muted);background:transparent;">Reset to defaults</button>
+                            <span id="vc-saved-msg" class="hidden text-sm" style="color:#10b981;">Saved!</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- ── Integrations tab ────────────────────────────────── -->
-                <div id="tab-integrations" class="hidden space-y-6">
-                    <div>
-                        <h1 class="text-xl font-bold text-main">Integrations</h1>
-                        <p class="text-sm mt-1" style="color:var(--text-muted);">Manage webhooks and app branding.</p>
+                <!-- Security -->
+                <div id="security-section" class="bg-card rounded-xl border border-border shadow-sm overflow-hidden" style="scroll-margin-top:5rem;">
+                    <div class="px-5 py-4 border-b border-border">
+                        <h2 class="text-sm font-semibold text-main">Security</h2>
+                        <p class="text-xs mt-0.5" style="color:var(--text-muted);">Change your account password.</p>
                     </div>
-
-                    <!-- Branding -->
-                    <div class="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
-                        <div class="px-5 py-4 border-b border-border">
-                            <h2 class="text-sm font-semibold text-main">Branding</h2>
-                            <p class="text-xs mt-0.5" style="color:var(--text-muted);">Shown to all users as "Welcome to [value] helper tool".</p>
+                    <div class="px-5 py-5 space-y-4">
+                        <div id="pw-error" class="hidden rounded-lg px-3 py-2.5 text-sm" style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);color:#ef4444;"></div>
+                        <div id="pw-success" class="hidden rounded-lg px-3 py-2.5 text-sm" style="background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);color:#10b981;"></div>
+                        <div>
+                            <label class="section-label" for="pw-current">Current Password</label>
+                            <input id="pw-current" type="password" class="input-base w-full rounded-md px-3 py-2 text-sm" placeholder="••••••••" autocomplete="current-password">
                         </div>
-                        <div class="px-5 py-5">
-                            <div class="flex gap-2 items-end">
-                                <div class="flex-1">
-                                    <label class="section-label" for="welcome-msg-input">Helper tool identifier</label>
-                                    <input id="welcome-msg-input" type="text" class="input-base w-full rounded-md px-3 py-2 text-sm" placeholder="e.g. Spark Energy" autocomplete="off">
-                                </div>
-                                <button onclick="saveWelcomeMessage()" class="bg-primary hover:bg-blue-600 text-white rounded-md px-4 py-2 text-sm font-medium transition-colors whitespace-nowrap">Save</button>
-                            </div>
-                            <p id="welcome-msg-status" class="hidden text-xs mt-2" style="color:#10b981;"></p>
+                        <div>
+                            <label class="section-label" for="pw-new">New Password</label>
+                            <input id="pw-new" type="password" class="input-base w-full rounded-md px-3 py-2 text-sm" placeholder="Min. 6 characters" autocomplete="new-password">
                         </div>
-                    </div>
-
-                    <!-- Google Chat -->
-                    <div class="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
-                        <div class="px-5 py-4 border-b border-border">
-                            <h2 class="text-sm font-semibold text-main">Google Chat Spaces</h2>
-                            <p class="text-xs mt-0.5" style="color:var(--text-muted);">Users with Google Chat permission will see these in Release Notes.</p>
+                        <div>
+                            <label class="section-label" for="pw-confirm">Confirm New Password</label>
+                            <input id="pw-confirm" type="password" class="input-base w-full rounded-md px-3 py-2 text-sm" placeholder="Re-enter new password" autocomplete="new-password">
                         </div>
-                        <div id="int-gchat-msg" class="hidden px-5 py-3 text-sm border-b border-border"></div>
-                        <div id="gchat-list" class="divide-y px-5 py-3 space-y-2" style="border-color:var(--border-color);">
-                            <div class="py-4 text-center text-sm" style="color:var(--text-muted);">Loading…</div>
-                        </div>
-                        <div class="px-5 py-4 border-t border-border">
-                            <p class="text-xs font-semibold text-main mb-3">Add New Space</p>
-                            <div class="grid gap-2" style="grid-template-columns:1fr 2fr auto;">
-                                <input id="gchat-new-label" type="text" class="input-base rounded-md px-2.5 py-2 text-sm" placeholder="Label">
-                                <input id="gchat-new-url" type="url" class="input-base rounded-md px-2.5 py-2 text-sm" placeholder="https://chat.googleapis.com/…">
-                                <button type="button" onclick="addWebhook('gchat')" class="bg-primary hover:bg-blue-600 text-white rounded-md px-3 py-2 text-sm font-medium transition-colors whitespace-nowrap">Add</button>
-                            </div>
-                            <p id="gchat-add-error" class="hidden text-xs text-red-400 mt-1.5"></p>
-                        </div>
-                    </div>
-
-                    <!-- Slack -->
-                    <div class="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
-                        <div class="px-5 py-4 border-b border-border">
-                            <h2 class="text-sm font-semibold text-main">Slack Webhooks</h2>
-                            <p class="text-xs mt-0.5" style="color:var(--text-muted);">Users with Slack permission will see these in Release Notes.</p>
-                        </div>
-                        <div id="int-slack-msg" class="hidden px-5 py-3 text-sm border-b border-border"></div>
-                        <div id="slack-list" class="divide-y px-5 py-3 space-y-2" style="border-color:var(--border-color);">
-                            <div class="py-4 text-center text-sm" style="color:var(--text-muted);">Loading…</div>
-                        </div>
-                        <div class="px-5 py-4 border-t border-border">
-                            <p class="text-xs font-semibold text-main mb-3">Add New Webhook</p>
-                            <div class="grid gap-2" style="grid-template-columns:1fr 2fr auto;">
-                                <input id="slack-new-label" type="text" class="input-base rounded-md px-2.5 py-2 text-sm" placeholder="Label">
-                                <input id="slack-new-url" type="url" class="input-base rounded-md px-2.5 py-2 text-sm" placeholder="https://hooks.slack.com/…">
-                                <button type="button" onclick="addWebhook('slack')" class="bg-primary hover:bg-blue-600 text-white rounded-md px-3 py-2 text-sm font-medium transition-colors whitespace-nowrap">Add</button>
-                            </div>
-                            <p id="slack-add-error" class="hidden text-xs text-red-400 mt-1.5"></p>
-                        </div>
-                    </div>
-
-                    <!-- Teams -->
-                    <div class="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
-                        <div class="px-5 py-4 border-b border-border">
-                            <h2 class="text-sm font-semibold text-main">Microsoft Teams Webhooks</h2>
-                            <p class="text-xs mt-0.5" style="color:var(--text-muted);">Users with Teams permission will see these in Release Notes.</p>
-                        </div>
-                        <div id="int-teams-msg" class="hidden px-5 py-3 text-sm border-b border-border"></div>
-                        <div id="teams-list" class="divide-y px-5 py-3 space-y-2" style="border-color:var(--border-color);">
-                            <div class="py-4 text-center text-sm" style="color:var(--text-muted);">Loading…</div>
-                        </div>
-                        <div class="px-5 py-4 border-t border-border">
-                            <p class="text-xs font-semibold text-main mb-3">Add New Webhook</p>
-                            <div class="grid gap-2" style="grid-template-columns:1fr 2fr auto;">
-                                <input id="teams-new-label" type="text" class="input-base rounded-md px-2.5 py-2 text-sm" placeholder="Label">
-                                <input id="teams-new-url" type="url" class="input-base rounded-md px-2.5 py-2 text-sm" placeholder="https://…webhook.office.com/…">
-                                <button type="button" onclick="addWebhook('teams')" class="bg-primary hover:bg-blue-600 text-white rounded-md px-3 py-2 text-sm font-medium transition-colors whitespace-nowrap">Add</button>
-                            </div>
-                            <p id="teams-add-error" class="hidden text-xs text-red-400 mt-1.5"></p>
-                        </div>
+                        <button id="pw-btn" onclick="changePassword()" class="text-sm bg-primary hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium transition-colors">Change Password</button>
                     </div>
                 </div>
+            </div>
 
-                <!-- ── Settings tab ──────────────────────────────────── -->
-                <div id="tab-settings" class="hidden space-y-6">
-                    <div>
-                        <h1 class="text-xl font-bold text-main">Settings</h1>
-                        <p class="text-sm mt-1" style="color:var(--text-muted);">Your personal preferences for Helper Tools.</p>
-                    </div>
-
-                    <!-- Version Control Defaults -->
-                    <div class="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
-                        <div class="px-5 py-4 border-b border-border">
-                            <h2 class="text-sm font-semibold text-main">Version Control Defaults</h2>
-                            <p class="text-xs mt-0.5" style="color:var(--text-muted);">Used to generate branch names and commit messages. Saved to your account.</p>
-                        </div>
-                        <div class="px-5 py-5 space-y-4">
-                            <div>
-                                <label class="section-label" for="vc-username">Username</label>
-                                <input id="vc-username" type="text" class="input-base w-full rounded-md px-3 py-2 text-sm" placeholder="e.g. rehan" autocomplete="off">
-                                <p class="text-xs mt-1.5" style="color:var(--text-muted);">Used in branch names: <span class="font-mono">username/feat/description</span></p>
-                            </div>
-                            <div>
-                                <label class="section-label" for="vc-prefix">Ticket Prefix</label>
-                                <input id="vc-prefix" type="text" class="input-base w-full rounded-md px-3 py-2 text-sm uppercase" placeholder="e.g. SPRK-" autocomplete="off">
-                                <p class="text-xs mt-1.5" style="color:var(--text-muted);">Prefixed to ticket numbers: <span class="font-mono">SPRK-1234</span></p>
-                            </div>
-                            <div class="flex items-center gap-3 pt-1">
-                                <button id="vc-save-btn" onclick="saveVcSettings()" class="text-sm bg-primary hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium transition-colors">Save</button>
-                                <button id="vc-reset-btn" onclick="resetVcSettings()" class="text-sm px-4 py-2 rounded-lg font-medium transition-colors border border-border" style="color:var(--text-muted);background:transparent;">Reset to defaults</button>
-                                <span id="vc-saved-msg" class="hidden text-sm" style="color:#10b981;">Saved!</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Security -->
-                    <div class="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
-                        <div class="px-5 py-4 border-b border-border">
-                            <h2 class="text-sm font-semibold text-main">Security</h2>
-                            <p class="text-xs mt-0.5" style="color:var(--text-muted);">Change your account password.</p>
-                        </div>
-                        <div class="px-5 py-5 space-y-4">
-                            <div id="pw-error" class="hidden rounded-lg px-3 py-2.5 text-sm" style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);color:#ef4444;"></div>
-                            <div id="pw-success" class="hidden rounded-lg px-3 py-2.5 text-sm" style="background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);color:#10b981;"></div>
-                            <div>
-                                <label class="section-label" for="pw-current">Current Password</label>
-                                <input id="pw-current" type="password" class="input-base w-full rounded-md px-3 py-2 text-sm" placeholder="••••••••" autocomplete="current-password">
-                            </div>
-                            <div>
-                                <label class="section-label" for="pw-new">New Password</label>
-                                <input id="pw-new" type="password" class="input-base w-full rounded-md px-3 py-2 text-sm" placeholder="Min. 6 characters" autocomplete="new-password">
-                            </div>
-                            <div>
-                                <label class="section-label" for="pw-confirm">Confirm New Password</label>
-                                <input id="pw-confirm" type="password" class="input-base w-full rounded-md px-3 py-2 text-sm" placeholder="Re-enter new password" autocomplete="new-password">
-                            </div>
-                            <button id="pw-btn" onclick="changePassword()" class="text-sm bg-primary hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium transition-colors">Change Password</button>
-                        </div>
-                    </div>
-                </div>
-
-            </main>
-        </div>
+        </main>
     </div>
 
     <!-- Add User Modal -->
@@ -325,7 +298,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-    <script src="shared.js?v=20260524-2"></script>
+    <script src="shared.js?v=20260524-3"></script>
     <script>
         // ── Theme ─────────────────────────────────────────────────────────────
         (function () {
@@ -342,21 +315,15 @@
             localStorage.setItem('ostrom_theme', isDark ? 'dark' : 'light');
             document.getElementById('icon-sun').classList.toggle('hidden', !isDark);
             document.getElementById('icon-moon').classList.toggle('hidden', isDark);
-            var sbSun  = document.getElementById('ht-sb-sun');
-            var sbMoon = document.getElementById('ht-sb-moon');
-            var sbLbl  = document.getElementById('ht-sb-theme-lbl');
-            if (sbSun)  sbSun.style.display  = isDark ? 'block' : 'none';
-            if (sbMoon) sbMoon.style.display  = isDark ? 'none'  : 'block';
-            if (sbLbl)  sbLbl.textContent     = isDark ? 'Dark'  : 'Light';
         });
 
         // ── State ─────────────────────────────────────────────────────────────
-        var _currentUserRole = null;
-        var _selfUid         = null;
-        var _cachedUsers     = null;
+        var _currentUserRole  = null;
+        var _selfUid          = null;
+        var _cachedUsers      = null;
         var _pendingDeleteUid = null;
 
-        // ── Auth (via shared.js htOnAuthReady) ────────────────────────────────
+        // ── Auth ──────────────────────────────────────────────────────────────
         window.htOnAuthReady = function (auth) {
             if (!auth.user) {
                 sessionStorage.setItem('ht_return_to', 'settings.html');
@@ -367,16 +334,11 @@
             _currentUserRole = auth.role;
             _selfUid         = auth.user.uid;
 
-            if (auth.role === 'admin') {
-                document.getElementById('nav-users').classList.remove('hidden');
-                document.getElementById('nav-integrations').classList.remove('hidden');
-            }
-
             document.getElementById('page-loading').style.display = 'none';
             document.getElementById('page-content').classList.remove('hidden');
 
-            var hash      = window.location.hash.replace('#', '');
-            var adminTabs = ['users', 'integrations'];
+            var hash       = window.location.hash.replace('#', '');
+            var adminTabs  = ['users', 'integrations'];
             var defaultTab = (auth.role === 'admin') ? 'users' : 'settings';
             if (adminTabs.includes(hash) && auth.role === 'admin') defaultTab = hash;
             if (hash === 'settings') defaultTab = 'settings';
@@ -388,19 +350,16 @@
         };
 
         // ── Tab switching ─────────────────────────────────────────────────────
-        function switchTab(tab) {
+        window.switchTab = function (tab) {
             ['users', 'integrations', 'settings'].forEach(function (t) {
                 document.getElementById('tab-' + t).classList.add('hidden');
-                var nav = document.getElementById('nav-' + t);
-                if (nav) nav.classList.remove('active');
             });
             document.getElementById('tab-' + tab).classList.remove('hidden');
-            var activeNav = document.getElementById('nav-' + tab);
-            if (activeNav) activeNav.classList.add('active');
             window.location.hash = tab;
+            if (typeof window.htSidebarSetActive === 'function') window.htSidebarSetActive(tab);
             if (tab === 'integrations' && _currentUserRole === 'admin') loadAllIntegrations();
             if (tab === 'users' && !_cachedUsers) loadUsers();
-        }
+        };
 
         // ── Helpers ───────────────────────────────────────────────────────────
         function escHtml(str) {
@@ -463,85 +422,111 @@
 
             var row = document.createElement('div');
             row.id  = 'row-' + uid;
-            row.className = 'px-5 py-4 flex flex-wrap items-center gap-3';
-            if (disabled) row.style.opacity = '0.55';
+            row.style.cssText = 'padding:0.875rem 1.25rem;' + (disabled ? 'opacity:0.55;' : '');
 
-            var badge = isAdmin
-                ? '<span style="font-size:0.7rem;font-weight:700;padding:0.15rem 0.5rem;border-radius:9999px;background:rgba(59,130,246,0.12);color:var(--primary);flex-shrink:0;">Admin</span>'
-                : '<span style="font-size:0.7rem;font-weight:700;padding:0.15rem 0.5rem;border-radius:9999px;background:var(--bg-surface);color:var(--text-muted);flex-shrink:0;">Member</span>';
+            var roleBadge = isAdmin
+                ? '<span style="font-size:0.68rem;font-weight:700;padding:0.15rem 0.5rem;border-radius:9999px;background:rgba(59,130,246,0.12);color:var(--primary);flex-shrink:0;">Admin</span>'
+                : '<span style="font-size:0.68rem;font-weight:700;padding:0.15rem 0.5rem;border-radius:9999px;background:var(--bg-surface);color:var(--text-muted);flex-shrink:0;">Member</span>';
             var disabledBadge = disabled
-                ? '<span style="font-size:0.7rem;font-weight:700;padding:0.15rem 0.5rem;border-radius:9999px;background:rgba(239,68,68,0.1);color:#ef4444;flex-shrink:0;">Disabled</span>'
+                ? '<span style="font-size:0.68rem;font-weight:700;padding:0.15rem 0.5rem;border-radius:9999px;background:rgba(239,68,68,0.1);color:#ef4444;flex-shrink:0;">Disabled</span>'
                 : '';
 
-            var nameHtml =
-                '<p id="name-display-' + uid + '" style="font-size:0.875rem;font-weight:600;color:var(--text-main);margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' +
-                escHtml(data.name || '—') +
-                '<button onclick="startEditName(\'' + uid + '\')" title="Edit name" style="margin-left:0.375rem;background:none;border:none;cursor:pointer;color:var(--text-muted);padding:0;vertical-align:middle;" onmouseover="this.style.color=\'var(--primary)\'" onmouseout="this.style.color=\'var(--text-muted)\'"><svg style="width:0.75rem;height:0.75rem;display:inline;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>' +
-                '</p>' +
+            // Inline name edit
+            var nameRow =
+                '<div id="name-display-' + uid + '" style="display:flex;align-items:center;gap:0.375rem;flex-wrap:wrap;">' +
+                '<span style="font-size:0.875rem;font-weight:600;color:var(--text-main);">' + escHtml(data.name || '—') + '</span>' +
+                '<button onclick="startEditName(\'' + uid + '\')" title="Edit name" style="background:none;border:none;cursor:pointer;color:var(--text-muted);padding:0;line-height:1;" onmouseover="this.style.color=\'var(--primary)\'" onmouseout="this.style.color=\'var(--text-muted)\'"><svg style="width:0.75rem;height:0.75rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>' +
+                roleBadge + disabledBadge +
+                '</div>' +
                 '<div id="name-edit-' + uid + '" style="display:none;align-items:center;gap:0.375rem;">' +
                 '<input id="name-input-' + uid + '" type="text" value="' + escHtml(data.name || '') + '" style="font-size:0.8125rem;padding:0.2rem 0.5rem;border:1px solid var(--border-color);border-radius:0.375rem;background:var(--bg-card);color:var(--text-main);outline:none;width:9rem;" onfocus="this.style.borderColor=\'var(--border-focus)\'" onblur="this.style.borderColor=\'var(--border-color)\'" onkeydown="if(event.key===\'Enter\')saveEditName(\'' + uid + '\');if(event.key===\'Escape\')cancelEditName(\'' + uid + '\')">' +
                 '<button onclick="saveEditName(\'' + uid + '\')" style="font-size:0.75rem;padding:0.2rem 0.5rem;background:var(--primary);color:#fff;border:none;border-radius:0.375rem;cursor:pointer;">Save</button>' +
                 '<button onclick="cancelEditName(\'' + uid + '\')" style="font-size:0.75rem;padding:0.2rem 0.5rem;background:transparent;color:var(--text-muted);border:1px solid var(--border-color);border-radius:0.375rem;cursor:pointer;">Cancel</button>' +
                 '</div>';
 
-            var infoHtml =
-                '<div class="flex items-center gap-3 flex-1 min-w-0">' +
-                '<div style="width:2.25rem;height:2.25rem;border-radius:50%;background:rgba(59,130,246,0.12);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.9rem;color:var(--primary);flex-shrink:0;">' + escHtml(initials) + '</div>' +
-                '<div class="min-w-0 flex-1">' +
-                nameHtml +
-                '<p style="font-size:0.75rem;color:var(--text-muted);margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + escHtml(data.email || '') + '</p>' +
-                '</div>' + badge + disabledBadge + '</div>';
+            // Inline email edit
+            var emailRow =
+                '<div id="email-display-' + uid + '" style="display:flex;align-items:center;gap:0.3rem;margin-top:0.2rem;">' +
+                '<span style="font-size:0.75rem;color:var(--text-muted);">' + escHtml(data.email || '') + '</span>' +
+                (!isSelf ? '<button onclick="startEditEmail(\'' + uid + '\')" title="Edit email" style="background:none;border:none;cursor:pointer;color:var(--text-muted);padding:0;line-height:1;" onmouseover="this.style.color=\'var(--primary)\'" onmouseout="this.style.color=\'var(--text-muted)\'"><svg style="width:0.7rem;height:0.7rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>' : '') +
+                '</div>' +
+                '<div id="email-edit-' + uid + '" style="display:none;align-items:center;gap:0.375rem;margin-top:0.25rem;">' +
+                '<input id="email-input-' + uid + '" type="email" value="' + escHtml(data.email || '') + '" style="font-size:0.8125rem;padding:0.2rem 0.5rem;border:1px solid var(--border-color);border-radius:0.375rem;background:var(--bg-card);color:var(--text-main);outline:none;width:12rem;" onfocus="this.style.borderColor=\'var(--border-focus)\'" onblur="this.style.borderColor=\'var(--border-color)\'" onkeydown="if(event.key===\'Enter\')saveEditEmail(\'' + uid + '\');if(event.key===\'Escape\')cancelEditEmail(\'' + uid + '\')">' +
+                '<button onclick="saveEditEmail(\'' + uid + '\')" style="font-size:0.75rem;padding:0.2rem 0.5rem;background:var(--primary);color:#fff;border:none;border-radius:0.375rem;cursor:pointer;">Save</button>' +
+                '<button onclick="cancelEditEmail(\'' + uid + '\')" style="font-size:0.75rem;padding:0.2rem 0.5rem;background:transparent;color:var(--text-muted);border:1px solid var(--border-color);border-radius:0.375rem;cursor:pointer;">Cancel</button>' +
+                '</div>';
 
-            var togglesHtml = !isAdmin
-                ? '<div class="flex items-center gap-3 flex-shrink-0 flex-wrap">' +
+            // Permission toggles (non-admin only)
+            var toggles = !isAdmin
+                ? '<div style="display:flex;align-items:center;gap:0.875rem;margin-top:0.625rem;flex-wrap:wrap;">' +
                   _permToggle(uid, 'sendToChat',  canChat,  'Chat') +
                   _permToggle(uid, 'sendToSlack', canSlack, 'Slack') +
                   _permToggle(uid, 'sendToTeams', canTeams, 'Teams') +
                   '</div>'
                 : '';
 
-            var actionsHtml = !isSelf
-                ? '<div class="flex items-center gap-2 flex-shrink-0">' +
-                  '<button onclick="toggleDisabled(\'' + uid + '\',' + disabled + ')" style="font-size:0.8125rem;padding:0.3rem 0.75rem;border-radius:0.375rem;border:1px solid ' + (disabled ? 'rgba(16,185,129,0.4)' : 'rgba(239,68,68,0.3)') + ';background:transparent;cursor:pointer;font-weight:500;color:' + (disabled ? '#10b981' : '#ef4444') + ';transition:opacity 0.15s;" onmouseover="this.style.opacity=\'0.7\'" onmouseout="this.style.opacity=\'1\'">' + (disabled ? 'Enable' : 'Disable') + '</button>' +
-                  '<button onclick="openDeleteModal(\'' + uid + '\')" style="font-size:0.8125rem;padding:0.3rem 0.75rem;border-radius:0.375rem;border:1px solid rgba(239,68,68,0.3);background:transparent;cursor:pointer;font-weight:500;color:#ef4444;transition:opacity 0.15s;" onmouseover="this.style.opacity=\'0.7\'" onmouseout="this.style.opacity=\'1\'">Delete</button>' +
+            // Action buttons (non-self only)
+            var actions = !isSelf
+                ? '<div style="display:flex;align-items:center;gap:0.5rem;margin-top:0.625rem;flex-wrap:wrap;">' +
+                  '<button onclick="toggleDisabled(\'' + uid + '\',' + disabled + ')" style="font-size:0.8rem;padding:0.25rem 0.75rem;border-radius:0.375rem;border:1px solid ' + (disabled ? 'rgba(16,185,129,0.4)' : 'rgba(239,68,68,0.3)') + ';background:transparent;cursor:pointer;font-weight:500;color:' + (disabled ? '#10b981' : '#ef4444') + ';transition:opacity 0.15s;" onmouseover="this.style.opacity=\'0.7\'" onmouseout="this.style.opacity=\'1\'">' + (disabled ? 'Enable' : 'Disable') + '</button>' +
+                  '<button onclick="openDeleteModal(\'' + uid + '\')" style="font-size:0.8rem;padding:0.25rem 0.75rem;border-radius:0.375rem;border:1px solid rgba(239,68,68,0.3);background:transparent;cursor:pointer;font-weight:500;color:#ef4444;transition:opacity 0.15s;" onmouseover="this.style.opacity=\'0.7\'" onmouseout="this.style.opacity=\'1\'">Delete</button>' +
                   '</div>'
                 : '';
 
-            row.innerHTML = infoHtml + togglesHtml + actionsHtml;
+            row.innerHTML =
+                '<div style="display:flex;align-items:flex-start;gap:0.875rem;">' +
+                '<div style="width:2.25rem;height:2.25rem;border-radius:50%;background:rgba(59,130,246,0.12);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.9rem;color:var(--primary);flex-shrink:0;margin-top:0.1rem;">' + escHtml(initials) + '</div>' +
+                '<div style="flex:1;min-width:0;">' +
+                nameRow + emailRow + toggles + actions +
+                '</div>' +
+                '</div>';
+
             return row;
         }
 
         function _permToggle(uid, perm, isOn, label) {
-            return '<div class="flex items-center gap-1.5">' +
-                '<span style="font-size:0.7rem;color:var(--text-muted);">' + label + '</span>' +
+            return '<div style="display:flex;align-items:center;gap:0.375rem;">' +
+                '<span style="font-size:0.72rem;color:var(--text-muted);">' + label + '</span>' +
                 '<div class="toggle-track' + (isOn ? ' on' : '') + '" onclick="togglePermission(\'' + uid + '\',\'' + perm + '\',' + isOn + ')" title="' + (isOn ? 'Revoke' : 'Grant') + ' ' + label + '">' +
                 '<div class="toggle-thumb"></div></div></div>';
         }
 
-        // ── Inline name editing ───────────────────────────────────────────────
+        // ── Name editing ──────────────────────────────────────────────────────
         function startEditName(uid) {
             document.getElementById('name-display-' + uid).style.display = 'none';
             document.getElementById('name-edit-' + uid).style.display = 'flex';
             document.getElementById('name-input-' + uid).focus();
             document.getElementById('name-input-' + uid).select();
         }
-
         function cancelEditName(uid) {
-            document.getElementById('name-display-' + uid).style.display = '';
+            document.getElementById('name-display-' + uid).style.display = 'flex';
             document.getElementById('name-edit-' + uid).style.display = 'none';
         }
-
         function saveEditName(uid) {
             var newName = document.getElementById('name-input-' + uid).value.trim();
             if (!newName) return;
             window.htFirebase.db.collection('users').doc(uid).update({ name: newName })
-                .then(function () {
-                    if (_cachedUsers && _cachedUsers[uid]) _cachedUsers[uid].name = newName;
-                    _cachedUsers = null;
-                    loadUsers();
-                    showPanelMsg('Name updated.', false);
-                })
+                .then(function () { _cachedUsers = null; loadUsers(); showPanelMsg('Name updated.', false); })
                 .catch(function () { showPanelMsg('Failed to update name.', true); });
+        }
+
+        // ── Email editing ─────────────────────────────────────────────────────
+        function startEditEmail(uid) {
+            document.getElementById('email-display-' + uid).style.display = 'none';
+            document.getElementById('email-edit-' + uid).style.display = 'flex';
+            document.getElementById('email-input-' + uid).focus();
+            document.getElementById('email-input-' + uid).select();
+        }
+        function cancelEditEmail(uid) {
+            document.getElementById('email-display-' + uid).style.display = 'flex';
+            document.getElementById('email-edit-' + uid).style.display = 'none';
+        }
+        function saveEditEmail(uid) {
+            var newEmail = document.getElementById('email-input-' + uid).value.trim().toLowerCase();
+            if (!newEmail || newEmail.indexOf('@') === -1) { showPanelMsg('Enter a valid email address.', true); return; }
+            window.htFirebase.db.collection('users').doc(uid).update({ email: newEmail })
+                .then(function () { _cachedUsers = null; loadUsers(); showPanelMsg('Email updated.', false); })
+                .catch(function () { showPanelMsg('Failed to update email.', true); });
         }
 
         // ── Permission toggle ─────────────────────────────────────────────────
@@ -556,11 +541,7 @@
         // ── Disable / enable ──────────────────────────────────────────────────
         function toggleDisabled(uid, current) {
             window.htFirebase.db.collection('users').doc(uid).update({ disabled: !current })
-                .then(function () {
-                    _cachedUsers = null;
-                    loadUsers();
-                    showPanelMsg('User ' + (current ? 'enabled' : 'disabled') + '.', false);
-                })
+                .then(function () { _cachedUsers = null; loadUsers(); showPanelMsg('User ' + (current ? 'enabled' : 'disabled') + '.', false); })
                 .catch(function () { showPanelMsg('Failed to update user.', true); });
         }
 
@@ -578,40 +559,25 @@
             document.getElementById('delete-user-overlay').style.display = 'flex';
             setTimeout(function () { document.getElementById('delete-confirm-input').focus(); }, 50);
         }
-
         function closeDeleteModal() {
             _pendingDeleteUid = null;
             document.getElementById('delete-user-overlay').style.display = 'none';
         }
-
         function onDeleteInputChange() {
-            var val = document.getElementById('delete-confirm-input').value;
-            var ok  = val === 'delete';
+            var ok  = document.getElementById('delete-confirm-input').value === 'delete';
             var btn = document.getElementById('delete-confirm-btn');
             btn.disabled = !ok;
             btn.style.opacity = ok ? '1' : '0.4';
             btn.style.cursor  = ok ? 'pointer' : 'not-allowed';
         }
-
         function executeDeleteUser() {
             if (!_pendingDeleteUid) return;
             var uid = _pendingDeleteUid;
             var btn = document.getElementById('delete-confirm-btn');
-            btn.textContent = 'Deleting…';
-            btn.disabled = true;
+            btn.textContent = 'Deleting…'; btn.disabled = true;
             window.htFirebase.db.collection('users').doc(uid).delete()
-                .then(function () {
-                    closeDeleteModal();
-                    _cachedUsers = null;
-                    loadUsers();
-                    showPanelMsg('User deleted.', false);
-                })
-                .catch(function () {
-                    btn.textContent = 'Delete';
-                    btn.disabled = false;
-                    btn.style.opacity = '1';
-                    showPanelMsg('Failed to delete user.', true);
-                });
+                .then(function () { closeDeleteModal(); _cachedUsers = null; loadUsers(); showPanelMsg('User deleted.', false); })
+                .catch(function () { btn.textContent = 'Delete'; btn.disabled = false; btn.style.opacity = '1'; showPanelMsg('Failed to delete user.', true); });
         }
 
         // ── Add user modal ────────────────────────────────────────────────────
@@ -620,54 +586,38 @@
             document.getElementById('modal-error').classList.add('hidden');
             document.getElementById('add-user-form').reset();
         });
-
         function closeAddUserModal() {
             document.getElementById('add-user-overlay').style.display = 'none';
         }
-
         document.getElementById('add-user-form').addEventListener('submit', function (e) {
             e.preventDefault();
-            var name       = document.getElementById('new-name').value.trim();
-            var email      = document.getElementById('new-email').value.trim();
-            var password   = document.getElementById('new-password').value;
+            var name        = document.getElementById('new-name').value.trim();
+            var email       = document.getElementById('new-email').value.trim();
+            var password    = document.getElementById('new-password').value;
             var sendToChat  = document.getElementById('new-perm-sendToChat').checked;
             var sendToSlack = document.getElementById('new-perm-sendToSlack').checked;
             var sendToTeams = document.getElementById('new-perm-sendToTeams').checked;
-            var btn        = document.getElementById('add-user-submit');
-
+            var btn         = document.getElementById('add-user-submit');
             document.getElementById('modal-error').classList.add('hidden');
             if (!name)               { showModalError('Please enter a full name.'); return; }
             if (!email)              { showModalError('Please enter an email.'); return; }
             if (password.length < 6) { showModalError('Password must be at least 6 characters.'); return; }
-
             btn.disabled = true; btn.textContent = 'Creating…'; btn.style.opacity = '0.7';
-
             createUser(name, email, password, { sendToChat: sendToChat, sendToSlack: sendToSlack, sendToTeams: sendToTeams })
-                .then(function () {
-                    closeAddUserModal();
-                    _cachedUsers = null;
-                    loadUsers();
-                    showPanelMsg('User created successfully.', false);
-                })
+                .then(function () { closeAddUserModal(); _cachedUsers = null; loadUsers(); showPanelMsg('User created successfully.', false); })
                 .catch(function (err) { showModalError(friendlyCreateError(err.code)); })
                 .finally(function () { btn.disabled = false; btn.textContent = 'Create User'; btn.style.opacity = '1'; });
         });
-
         function showModalError(msg) {
             var el = document.getElementById('modal-error');
-            el.textContent = msg;
-            el.classList.remove('hidden');
+            el.textContent = msg; el.classList.remove('hidden');
         }
-
         function friendlyCreateError(code) {
-            switch (code) {
-                case 'auth/email-already-in-use': return 'That email is already registered.';
-                case 'auth/invalid-email':        return 'Please enter a valid email address.';
-                case 'auth/weak-password':        return 'Password is too weak. Use at least 6 characters.';
-                default:                          return 'Failed to create user. Please try again.';
-            }
+            if (code === 'auth/email-already-in-use') return 'That email is already registered.';
+            if (code === 'auth/invalid-email')        return 'Please enter a valid email address.';
+            if (code === 'auth/weak-password')        return 'Password is too weak. Use at least 6 characters.';
+            return 'Failed to create user. Please try again.';
         }
-
         function createUser(name, email, password, permissions) {
             var config       = window.htFirebase.config;
             var db           = window.htFirebase.db;
@@ -690,7 +640,6 @@
             document.getElementById('vc-username').value = window.htGetPref('ostrom_user', '');
             document.getElementById('vc-prefix').value   = window.htGetPref('ostrom_prefix', 'SPRK-');
         }
-
         function saveVcSettings() {
             var username = document.getElementById('vc-username').value.trim().toLowerCase();
             var prefix   = document.getElementById('vc-prefix').value.trim().toUpperCase() || 'SPRK-';
@@ -698,20 +647,17 @@
             window.htSavePref('ostrom_user',   username);
             window.htSavePref('ostrom_prefix', prefix);
             var msg = document.getElementById('vc-saved-msg');
-            msg.textContent = 'Saved!';
-            msg.classList.remove('hidden');
+            msg.textContent = 'Saved!'; msg.classList.remove('hidden');
             clearTimeout(saveVcSettings._t);
             saveVcSettings._t = setTimeout(function () { msg.classList.add('hidden'); }, 2000);
         }
-
         function resetVcSettings() {
             window.htSavePref('ostrom_user',   '');
             window.htSavePref('ostrom_prefix', 'SPRK-');
             document.getElementById('vc-username').value = '';
             document.getElementById('vc-prefix').value   = 'SPRK-';
             var msg = document.getElementById('vc-saved-msg');
-            msg.textContent = 'Reset!';
-            msg.classList.remove('hidden');
+            msg.textContent = 'Reset!'; msg.classList.remove('hidden');
             clearTimeout(saveVcSettings._t);
             saveVcSettings._t = setTimeout(function () { msg.classList.add('hidden'); msg.textContent = 'Saved!'; }, 2000);
         }
@@ -724,24 +670,17 @@
             var errEl   = document.getElementById('pw-error');
             var okEl    = document.getElementById('pw-success');
             var btn     = document.getElementById('pw-btn');
-
-            errEl.classList.add('hidden');
-            okEl.classList.add('hidden');
-
-            if (!current)        { errEl.textContent = 'Please enter your current password.'; errEl.classList.remove('hidden'); return; }
-            if (newPw.length < 6){ errEl.textContent = 'New password must be at least 6 characters.'; errEl.classList.remove('hidden'); return; }
-            if (newPw !== confirm){ errEl.textContent = 'Passwords do not match.'; errEl.classList.remove('hidden'); return; }
-
+            errEl.classList.add('hidden'); okEl.classList.add('hidden');
+            if (!current)         { errEl.textContent = 'Please enter your current password.'; errEl.classList.remove('hidden'); return; }
+            if (newPw.length < 6) { errEl.textContent = 'New password must be at least 6 characters.'; errEl.classList.remove('hidden'); return; }
+            if (newPw !== confirm) { errEl.textContent = 'Passwords do not match.'; errEl.classList.remove('hidden'); return; }
             btn.disabled = true; btn.textContent = 'Updating…'; btn.style.opacity = '0.7';
-
             var user       = window.htFirebase.auth.currentUser;
             var credential = firebase.auth.EmailAuthProvider.credential(user.email, current);
-
             user.reauthenticateWithCredential(credential)
                 .then(function () { return user.updatePassword(newPw); })
                 .then(function () {
-                    okEl.textContent = 'Password changed successfully.';
-                    okEl.classList.remove('hidden');
+                    okEl.textContent = 'Password changed successfully.'; okEl.classList.remove('hidden');
                     document.getElementById('pw-current').value = '';
                     document.getElementById('pw-new').value     = '';
                     document.getElementById('pw-confirm').value = '';
@@ -750,56 +689,27 @@
                     var msg = 'Failed to change password.';
                     if (err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') msg = 'Current password is incorrect.';
                     if (err.code === 'auth/weak-password') msg = 'New password is too weak.';
-                    errEl.textContent = msg;
-                    errEl.classList.remove('hidden');
+                    errEl.textContent = msg; errEl.classList.remove('hidden');
                 })
                 .finally(function () { btn.disabled = false; btn.textContent = 'Change Password'; btn.style.opacity = '1'; });
         }
 
-        // ── Webhooks (shared logic) ───────────────────────────────────────────
-        var _hooks = { gchat: [], slack: [], teams: [] };
+        // ── Webhooks ──────────────────────────────────────────────────────────
+        var _hooks       = { gchat: [], slack: [], teams: [] };
         var _hooksLoaded = { gchat: false, slack: false, teams: false };
-
-        var _hookConfig = {
-            gchat: {
-                docId:    'gchat',
-                listEl:   'gchat-list',
-                msgEl:    'int-gchat-msg',
-                labelEl:  'gchat-new-label',
-                urlEl:    'gchat-new-url',
-                errorEl:  'gchat-add-error',
-                validate: function(u) { return u.startsWith('https://chat.googleapis.com/'); },
-                hint:     'URL must start with https://chat.googleapis.com/'
-            },
-            slack: {
-                docId:    'slack',
-                listEl:   'slack-list',
-                msgEl:    'int-slack-msg',
-                labelEl:  'slack-new-label',
-                urlEl:    'slack-new-url',
-                errorEl:  'slack-add-error',
-                validate: function(u) { return u.startsWith('https://hooks.slack.com/'); },
-                hint:     'URL must start with https://hooks.slack.com/'
-            },
-            teams: {
-                docId:    'teams',
-                listEl:   'teams-list',
-                msgEl:    'int-teams-msg',
-                labelEl:  'teams-new-label',
-                urlEl:    'teams-new-url',
-                errorEl:  'teams-add-error',
-                validate: function(u) { return u.startsWith('https://') && u.indexOf('webhook.office.com') !== -1; },
-                hint:     'URL must be a valid Microsoft Teams webhook URL'
-            }
+        var _hookConfig  = {
+            gchat:  { docId:'gchat',  listEl:'gchat-list',  msgEl:'int-gchat-msg',  labelEl:'gchat-new-label',  urlEl:'gchat-new-url',  errorEl:'gchat-add-error',
+                       validate: function(u){ return u.startsWith('https://chat.googleapis.com/'); }, hint:'URL must start with https://chat.googleapis.com/' },
+            slack:  { docId:'slack',  listEl:'slack-list',  msgEl:'int-slack-msg',  labelEl:'slack-new-label',  urlEl:'slack-new-url',  errorEl:'slack-add-error',
+                       validate: function(u){ return u.startsWith('https://hooks.slack.com/'); }, hint:'URL must start with https://hooks.slack.com/' },
+            teams:  { docId:'teams',  listEl:'teams-list',  msgEl:'int-teams-msg',  labelEl:'teams-new-label',  urlEl:'teams-new-url',  errorEl:'teams-add-error',
+                       validate: function(u){ return u.startsWith('https://') && u.indexOf('webhook.office.com') !== -1; }, hint:'URL must be a valid Microsoft Teams webhook URL' }
         };
 
         function loadAllIntegrations() {
             loadBrandingSettings();
-            Object.keys(_hookConfig).forEach(function (type) {
-                loadWebhooks(type);
-            });
+            Object.keys(_hookConfig).forEach(function (type) { loadWebhooks(type); });
         }
-
         function loadWebhooks(type) {
             var cfg  = _hookConfig[type];
             var list = document.getElementById(cfg.listEl);
@@ -810,11 +720,8 @@
                     _hooksLoaded[type] = true;
                     renderWebhookRows(type);
                 })
-                .catch(function () {
-                    list.innerHTML = '<div class="py-4 text-center text-sm" style="color:#ef4444;">Failed to load.</div>';
-                });
+                .catch(function () { list.innerHTML = '<div class="py-4 text-center text-sm" style="color:#ef4444;">Failed to load.</div>'; });
         }
-
         function renderWebhookRows(type) {
             var cfg  = _hookConfig[type];
             var list = document.getElementById(cfg.listEl);
@@ -829,24 +736,18 @@
                 row.innerHTML =
                     '<div class="flex-1 min-w-0">' +
                     '<p style="font-size:0.875rem;font-weight:600;color:var(--text-main);margin:0;">' + escHtml(hook.label) + '</p>' +
-                    '<p style="font-size:0.75rem;color:var(--text-muted);margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + escHtml(hook.url.length > 55 ? hook.url.substring(0, 55) + '…' : hook.url) + '</p>' +
+                    '<p style="font-size:0.75rem;color:var(--text-muted);margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + escHtml(hook.url.length > 55 ? hook.url.substring(0,55) + '…' : hook.url) + '</p>' +
                     '</div>' +
                     '<button onclick="removeWebhook(\'' + type + '\',' + i + ')" style="font-size:0.8125rem;padding:0.25rem 0.625rem;border-radius:0.375rem;border:1px solid rgba(239,68,68,0.3);background:transparent;cursor:pointer;color:#ef4444;flex-shrink:0;transition:opacity 0.15s;" onmouseover="this.style.opacity=\'0.7\'" onmouseout="this.style.opacity=\'1\'">Remove</button>';
                 list.appendChild(row);
             });
         }
-
         function saveWebhooks(type, arr, successMsg) {
             var cfg = _hookConfig[type];
             return window.htFirebase.db.collection('settings').doc(cfg.docId).set({ webhooks: arr })
-                .then(function () {
-                    _hooks[type] = arr;
-                    renderWebhookRows(type);
-                    showIntMsg(cfg.msgEl, successMsg || 'Saved.', false);
-                })
+                .then(function () { _hooks[type] = arr; renderWebhookRows(type); showIntMsg(cfg.msgEl, successMsg || 'Saved.', false); })
                 .catch(function () { showIntMsg(cfg.msgEl, 'Failed to save. Check your connection.', true); });
         }
-
         function addWebhook(type) {
             var cfg   = _hookConfig[type];
             var label = document.getElementById(cfg.labelEl).value.trim();
@@ -861,36 +762,30 @@
                 document.getElementById(cfg.urlEl).value   = '';
             });
         }
-
         function removeWebhook(type, index) {
-            var updated = _hooks[type].filter(function (_, i) { return i !== index; });
-            saveWebhooks(type, updated, 'Webhook removed.');
+            saveWebhooks(type, _hooks[type].filter(function (_, i) { return i !== index; }), 'Webhook removed.');
         }
 
         // ── Branding ──────────────────────────────────────────────────────────
         function loadBrandingSettings() {
             window.htFirebase.db.collection('settings').doc('app').get()
                 .then(function (snap) {
-                    var val = (snap.exists && snap.data().welcomeMessage) ? snap.data().welcomeMessage : '';
-                    document.getElementById('welcome-msg-input').value = val;
+                    document.getElementById('welcome-msg-input').value =
+                        (snap.exists && snap.data().welcomeMessage) ? snap.data().welcomeMessage : '';
                 })
                 .catch(function () {});
         }
-
         function saveWelcomeMessage() {
-            var val = document.getElementById('welcome-msg-input').value.trim();
+            var val      = document.getElementById('welcome-msg-input').value.trim();
             var statusEl = document.getElementById('welcome-msg-status');
             window.htFirebase.db.collection('settings').doc('app').set({ welcomeMessage: val }, { merge: true })
                 .then(function () {
-                    statusEl.textContent = 'Saved!';
-                    statusEl.classList.remove('hidden');
+                    statusEl.textContent = 'Saved!'; statusEl.style.color = '#10b981'; statusEl.classList.remove('hidden');
                     clearTimeout(saveWelcomeMessage._t);
                     saveWelcomeMessage._t = setTimeout(function () { statusEl.classList.add('hidden'); }, 2000);
                 })
                 .catch(function () {
-                    statusEl.textContent = 'Failed to save.';
-                    statusEl.style.color = '#ef4444';
-                    statusEl.classList.remove('hidden');
+                    statusEl.textContent = 'Failed to save.'; statusEl.style.color = '#ef4444'; statusEl.classList.remove('hidden');
                 });
         }
     </script>
